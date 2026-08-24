@@ -63,7 +63,7 @@ export default function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative isolate -mt-20 flex min-h-[680px] items-center overflow-hidden text-white sm:-mt-24 lg:min-h-[760px]"
+      className="relative isolate -mt-20 flex min-h-[100svh] items-center overflow-hidden text-white sm:-mt-24 sm:min-h-[680px] lg:min-h-[760px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-label="That-tae ธาตุแท้ showcase"
@@ -79,27 +79,27 @@ export default function HeroSection() {
       ))}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(35,22,17,.92)_0%,rgba(35,22,17,.7)_48%,rgba(35,22,17,.15)_82%)] max-sm:bg-black/60" />
 
-      <div className="home-container py-24">
+      <div className="home-container pb-20 pt-32 sm:py-24">
         <div ref={contentRef} className="max-w-3xl" aria-live="polite">
           <p className="text-xs font-bold uppercase tracking-[.24em] text-[#f1dec9]">
             That-tae · ธาตุแท้ 
           </p>
-          <h1 className="mt-5 text-5xl font-bold leading-relaxed sm:text-6xl lg:text-7xl">
+          <h1 className="mt-4 text-[clamp(2.35rem,11vw,3.15rem)] font-bold leading-[1.25] sm:mt-5 sm:text-6xl sm:leading-[1.35] lg:text-7xl">
             {slide.title}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-8 text-white/80 sm:text-lg">
             {slide.description}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-7 grid gap-3 min-[430px]:flex min-[430px]:flex-wrap sm:mt-8">
             <a
               href={slide.primary[1]}
-              className="shimmer-button rounded-full bg-white px-7 py-3.5 font-bold text-[#3d2c2e] transition-colors hover:bg-[#f1dec9]"
+              className="shimmer-button rounded-full bg-white px-6 py-3.5 text-center font-bold text-[#3d2c2e] transition-colors hover:bg-[#f1dec9] sm:px-7"
             >
               {slide.primary[0]}
             </a>
             <a
               href={slide.secondary[1]}
-              className="rounded-full border border-white/40 bg-black/10 px-7 py-3.5 font-bold backdrop-blur-sm transition-colors hover:bg-white/15"
+              className="rounded-full border border-white/40 bg-black/10 px-6 py-3.5 text-center font-bold backdrop-blur-sm transition-colors hover:bg-white/15 sm:px-7"
             >
               {slide.secondary[0]}
             </a>
@@ -118,7 +118,7 @@ export default function HeroSection() {
         type="button"
         onClick={() => goTo(current - 1)}
         aria-label="สไลด์ก่อนหน้า"
-        className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/15 text-3xl backdrop-blur-sm hover:bg-black/30 sm:left-6"
+        className="absolute bottom-5 left-3 grid h-10 w-10 place-items-center rounded-full border border-white/30 bg-black/15 text-3xl backdrop-blur-sm hover:bg-black/30 sm:bottom-auto sm:left-6 sm:top-1/2 sm:h-11 sm:w-11 sm:-translate-y-1/2"
       >
         ‹
       </button>
@@ -126,7 +126,7 @@ export default function HeroSection() {
         type="button"
         onClick={() => goTo(current + 1)}
         aria-label="สไลด์ถัดไป"
-        className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/15 text-3xl backdrop-blur-sm hover:bg-black/30 sm:right-6"
+        className="absolute bottom-5 right-3 grid h-10 w-10 place-items-center rounded-full border border-white/30 bg-black/15 text-3xl backdrop-blur-sm hover:bg-black/30 sm:bottom-auto sm:right-6 sm:top-1/2 sm:h-11 sm:w-11 sm:-translate-y-1/2"
       >
         ›
       </button>

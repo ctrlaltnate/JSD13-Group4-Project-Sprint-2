@@ -246,19 +246,24 @@ export default function RegionalMapSection() {
   return (
     <section id="kits" className="home-section scroll-mt-24 bg-[#efe5d8]">
       <div className="home-container">
-        <div className="mb-10 max-w-3xl">
-          <h2 className="mt-4 text-4xl font-bold sm:text-5xl">
+        <div className="mb-7 max-w-3xl sm:mb-10">
+          <h2 className="mt-4 text-3xl font-bold sm:text-5xl">
             เมนูไทยหลากหลาย จากเหนือสู่ใต้
           </h2>
           <p className="mt-4 leading-7 text-[#6f675f]">
-            ลองวางเมาส์บนแผนที่เพื่อเปิดรสชาติของแต่ละภูมิภาค หากไม่ได้เลือก
-            ระบบจะพาเที่ยวทั่วไทยทุก 10 วินาที
+            <span className="hidden lg:inline">
+              ลองวางเมาส์บนแผนที่เพื่อเปิดรสชาติของแต่ละภูมิภาค หากไม่ได้เลือก
+              ระบบจะพาเที่ยวทั่วไทยทุก 10 วินาที
+            </span>
+            <span className="lg:hidden">
+              เลือกภูมิภาคที่สนใจ แล้วสำรวจเมนูไทยที่เลื่อนมาให้ชมได้ทันที
+            </span>
           </p>
         </div>
 
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(300px,400px)_minmax(0,1fr)] lg:gap-12">
           <div
-            className="relative mx-auto w-full max-w-[390px] lg:mx-0"
+            className="relative mx-auto hidden w-full max-w-[390px] lg:block lg:mx-0"
             onMouseEnter={() => setIsInteracting(true)}
             onMouseLeave={() => setIsInteracting(false)}
           >
@@ -299,6 +304,23 @@ export default function RegionalMapSection() {
             </div>
           </div>
 
+          <div
+            className="hide-scrollbar flex w-full gap-2 overflow-x-auto pb-1 lg:hidden"
+            aria-label="เลือกภูมิภาค"
+          >
+            {regions.map((region, index) => (
+              <button
+                key={region.id}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                className={`shrink-0 rounded-full border px-5 py-2.5 text-sm font-bold transition-colors ${active.id === region.id ? "border-[#3d2c2e] bg-[#3d2c2e] text-white" : "border-[#cdbdac] bg-white/55 text-[#6f5b4e]"}`}
+                aria-pressed={active.id === region.id}
+              >
+                {region.label}
+              </button>
+            ))}
+          </div>
+
           <div ref={detailsRef} key={active.id} aria-live="polite">
             <div data-region-content className="flex items-center gap-3">
               <span
@@ -307,7 +329,7 @@ export default function RegionalMapSection() {
               />
               <span className="font-bold text-[#7b6658]">{active.label}</span>
             </div>
-            <h3 data-region-content className="mt-3 text-3xl font-bold">
+            <h3 data-region-content className="mt-3 text-2xl font-bold sm:text-3xl">
               เมนูเด่นจาก{active.label}
             </h3>
             <p data-region-content className="mt-2 text-[#6f675f]">
@@ -330,7 +352,7 @@ export default function RegionalMapSection() {
                     {activeDishes.map((dish) => (
                       <article
                         key={`${copyIndex}-${dish._id}`}
-                        className="group w-[400px] shrink-0 overflow-hidden rounded-2xl bg-[#fdfbf7] shadow-sm transition-shadow duration-300 hover:shadow-lg"
+                        className="group w-[82vw] max-w-[400px] shrink-0 overflow-hidden rounded-2xl bg-[#fdfbf7] shadow-sm transition-shadow duration-300 hover:shadow-lg sm:w-[400px]"
                       >
                         <img
                           src={dish.imageUrl[0]}

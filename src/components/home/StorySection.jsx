@@ -17,7 +17,7 @@ export default function StorySection() {
             alt="เกษตรกรท้องถิ่นกับผลผลิตสด"
             className="aspect-[1.05] w-full rounded-[2rem] object-cover"
           />
-          <div className="absolute bottom-5 left-5 rounded-2xl bg-white/90 p-5 text-[#3d2c2e] backdrop-blur">
+          <div className="absolute bottom-3 left-3 rounded-2xl bg-white/90 p-4 text-[#3d2c2e] backdrop-blur sm:bottom-5 sm:left-5 sm:p-5">
             <strong>รู้ที่มาในทุกกล่อง</strong>
             <span className="mt-1 block text-sm">
               จากแหล่งผลิตที่ตรวจสอบได้
@@ -28,7 +28,7 @@ export default function StorySection() {
           <span className="text-xs font-bold uppercase tracking-[.22em] text-[#c8b6a6]">
             Local sourcing
           </span>
-          <h2 className="mt-4 text-4xl font-bold sm:text-5xl">
+          <h2 className="mt-4 text-3xl font-bold sm:text-5xl">
             สดจากชุมชน เติบโตไปพร้อมเกษตรกร
           </h2>
           <p className="mt-5 leading-8 text-[#e8dfd1]">

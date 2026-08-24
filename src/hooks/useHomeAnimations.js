@@ -17,7 +17,8 @@ export default function useHomeAnimations(pageRef) {
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (reduceMotion) return undefined;
+    const mobileViewport = window.matchMedia("(max-width: 767px)").matches;
+    if (reduceMotion || mobileViewport) return undefined;
 
     // จำกัด selector ให้อยู่ในหน้า Home และล้าง animation เมื่อออกจากหน้า
     const animationContext = gsap.context(() => {

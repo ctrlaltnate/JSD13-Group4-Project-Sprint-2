@@ -52,7 +52,7 @@ export default function ReviewsSection() {
           <span className="text-xs font-bold uppercase tracking-[.22em] text-[#f1dec9]">
             Your kitchen, your story
           </span>
-          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
+          <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">
             คืนนี้ ให้ครัวไทยมาอยู่ในบ้านคุณ
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-[#f3e8df] leading-7">
@@ -62,13 +62,13 @@ export default function ReviewsSection() {
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="#kits"
-              className="shimmer-button inline-flex rounded-full bg-white px-8 py-4 font-bold text-[#3d2c2e] transition-colors hover:bg-[#f1dec9]"
+              className="shimmer-button inline-flex w-full justify-center rounded-full bg-white px-6 py-4 font-bold text-[#3d2c2e] transition-colors hover:bg-[#f1dec9] sm:w-auto sm:px-8"
             >
               เริ่มเลือกเมนูของคุณ →
             </a>
             <a
               href="#plans"
-              className="inline-flex rounded-full border border-white/35 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-sm transition hover:bg-white/15"
+              className="inline-flex w-full justify-center rounded-full border border-white/35 bg-white/10 px-6 py-4 font-bold text-white backdrop-blur-sm transition hover:bg-white/15 sm:w-auto sm:px-8"
             >
               ดูแพ็กเกจทั้งหมด
             </a>
