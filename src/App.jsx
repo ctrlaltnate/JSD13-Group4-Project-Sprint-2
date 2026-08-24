@@ -1,15 +1,21 @@
-import { Route, Routes } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './components/index.js'
 import HomePage from './pages/HomePage.jsx'
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />
+        }
+      ]
+    }
+  ]);
 
 function App() {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
-      </Route>
-    </Routes>
-  )
+  return <RouterProvider router={router} />;
 }
 
 export default App
