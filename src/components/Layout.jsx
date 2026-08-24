@@ -6,7 +6,7 @@ function Layout() {
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       <Navbar />
 
-      <main className="mx-auto w-full flex-1 px-4 pb-8 pt-24 sm:px-6 sm:pt-28 lg:px-8 bg-[#D0C0AB]/100 ">
+      <main className="w-full flex-1 bg-[#fff8f5] pt-20 sm:pt-24">
         <Outlet />
       </main>
 

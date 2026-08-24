@@ -17,7 +17,7 @@ export default function Navbar() {
         className="mx-auto grid w-full max-w-[1200px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4
   bg-[#F1EAD7]/80 backdrop-blur-[16px] backdrop-saturate-[50%] 
   border border-white/30 rounded-[64px] 
-  shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] p-3 sm:p-4 overflow-x-auto overflow-y-hidden hide-scrollbar"
+  shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] p-1 sm:p-2 overflow-x-auto overflow-y-hidden hide-scrollbar"
       >
 
         <div className="flex justify-start ml-2">
@@ -38,7 +38,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="flex justify-end mr-4">
+        <div className="flex justify-end mr-1 bg-amber-950 px-4 py-3 rounded-4xl text-white">
           <Link
             to={links[links.length - 1]?.to || "/login"}
             className="whitespace-nowrap text-sm font-bold text-brown-800 transition-opacity hover:opacity-80 md:text-base"
