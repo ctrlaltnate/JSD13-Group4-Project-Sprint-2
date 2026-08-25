@@ -9,12 +9,12 @@
 โปรเจกต์นี้พัฒนาด้วย **MERN Stack** (MongoDB, Express, React, Node.js) โดยแบ่งหน้าที่และขอบเขตงานตาม Feature Branch ดังนี้:
 
 | Member | Role / Responsibilities | Frontend (React) | Backend (API & Database) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Nut** | **1. Admin Product & Validation** | Form Validation, Error UI, Admin Product Form, Register / Login | Admin CRUD (`POST`, `PUT`, `DELETE` `/api/products`) | 
-| **Delta** | **2. Storefront & Catalog** | Storefront UI, Product List & Detail Cards, Search & Filter | Fetch Products API (`GET` All / Single Product) | 
-| **Cream** | **3. Cart Management** | Cart UI Component, Add/Update/Remove Actions | Cart Operation APIs (`POST` Select, `PUT` Update, `DELETE` Item) | 
-| **Rin** | **4. Checkout & Order Flow** | Checkout UI, User ID Context, Order Summary | Fetch User Cart API (`GET` `/api/cart/:user_id`), Checkout & Stock Cut | 
-| **Nate** | **5. Core Arch & Global Layout** | React Routing, Global Layout (Navbar/Footer), Toast Alert UI | Mongoose Setup, Express Server Config, Centralized Error Middleware | 
+| :--- | :--- | :--- | :--- |
+| **Nut** | **1. Admin Product & Validation** | Form Validation, Error UI, Admin Product Form, Register / Login | Admin CRUD (`POST`, `PUT`, `DELETE` `/api/products`) |
+| **Delta** | **2. Storefront & Catalog** | Storefront UI, Product List & Detail Cards, Search & Filter | Fetch Products API (`GET` All / Single Product) |
+| **Cream** | **3. Cart Management** | Cart UI Component, Add/Update/Remove Actions | Cart Operation APIs (`POST` Select, `PUT` Update, `DELETE` Item) |
+| **Rin** | **4. Checkout & Order Flow** | Checkout UI, User ID Context, Order Summary | Fetch User Cart API (`GET` `/api/cart/:user_id`), Checkout & Stock Cut |
+| **Nate** | **5. Core Arch & Global Layout** | React Routing, Global Layout (Navbar/Footer), Toast Alert UI | Mongoose Setup, Express Server Config, Centralized Error Middleware |
 
 ---
 
