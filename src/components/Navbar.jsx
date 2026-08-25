@@ -95,11 +95,11 @@ export default function Navbar() {
     >
       <nav
         className="mx-auto w-full max-w-[1200px] rounded-[3rem] border border-white/40
-         bg-[#f1ead7]/90 p-1.5
-        shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-[16px] 
+         bg-[#f1ead7]/75 p-1.5
+        shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-[8px] 
         backdrop-saturate-[70%] 
         lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center 
-        lg:gap-4 lg:rounded-[64px]" 
+        lg:gap-4 lg:rounded-[64px]"
         aria-label="เมนูหลัก"
       >
         <div className="flex w-full items-center justify-between px-1 lg:w-auto lg:px-0">
@@ -141,8 +141,11 @@ export default function Navbar() {
             <Link
               key={link.to}
               to={link.to}
-              className="rounded-full px-2 py-1 text-xl font-bold text-[#3d2c2e] transition-[background-color,transform] 
-              duration-200 hover:-translate-y-0.5 hover:bg-[#8d593a]/12 lg:px-4 lg:text-xl"
+              className="rounded-full px-2 py-1 text-xl font-bold text-[#201a1a]
+              opacity-75 transition-[opacity,background-color,transform]
+              duration-500 ease-out
+               hover:bg-[#8d593a]/24 hover:opacity-100
+              lg:px-4 lg:text-xl"
             >
               {link.label}
             </Link>
@@ -171,7 +174,6 @@ export default function Navbar() {
                   className="group flex items-center rounded-xl px-3 py-3 text-[#3d2c2e] transition-colors hover:bg-[#8d593a]/10"
                 >
                   <span className="font-medium">{link.label}</span>
-
                 </Link>
               ))}
             </div>
@@ -192,10 +194,7 @@ export default function Navbar() {
                   กรุณาเข้าสู่ระบบ
                 </span>
               </span>
-
             </Link>
-
-
           </div>
         </div>
       </nav>

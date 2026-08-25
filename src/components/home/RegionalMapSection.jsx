@@ -1,124 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import thailandMap from "../../assets/thailand-map.svg";
-import { dishes } from "../../mock-data/index.js";
-
-const regions = [
-  {
-    id: "north",
-    dataRegion: "northern",
-    label: "ภาคเหนือ",
-    accent: "#9b6747",
-    description: "รสนุ่ม หอมเครื่องเทศและสมุนไพรจากภูเขา",
-    provinceIds: [
-      "TH50",
-      "TH51",
-      "TH52",
-      "TH53",
-      "TH54",
-      "TH55",
-      "TH56",
-      "TH57",
-      "TH58",
-      "TH60",
-      "TH62",
-      "TH63",
-      "TH64",
-      "TH65",
-      "TH66",
-      "TH67",
-    ],
-  },
-  {
-    id: "northeast",
-    dataRegion: "northeastern",
-    label: "ภาคอีสาน",
-    accent: "#a77b45",
-    description: "รสแซ่บ สดชื่นจากสมุนไพร และสนุกกับการกินร่วมกัน",
-    provinceIds: [
-      "TH30",
-      "TH31",
-      "TH32",
-      "TH33",
-      "TH34",
-      "TH35",
-      "TH36",
-      "TH37",
-      "TH38",
-      "TH39",
-      "TH40",
-      "TH41",
-      "TH42",
-      "TH43",
-      "TH44",
-      "TH45",
-      "TH46",
-      "TH47",
-      "TH48",
-      "TH49",
-    ],
-  },
-  {
-    id: "central",
-    dataRegion: "central",
-    label: "ภาคกลาง",
-    accent: "#6f7b52",
-    description: "ครบรส กลมกล่อม และประณีตแบบสำรับไทย",
-    provinceIds: [
-      "TH10",
-      "TH11",
-      "TH12",
-      "TH13",
-      "TH14",
-      "TH15",
-      "TH16",
-      "TH17",
-      "TH18",
-      "TH19",
-      "TH20",
-      "TH21",
-      "TH22",
-      "TH23",
-      "TH24",
-      "TH25",
-      "TH26",
-      "TH27",
-      "TH61",
-      "TH70",
-      "TH71",
-      "TH72",
-      "TH73",
-      "TH74",
-      "TH75",
-      "TH76",
-      "TH77",
-      "THS",
-    ],
-  },
-  {
-    id: "south",
-    dataRegion: "southern",
-    label: "ภาคใต้",
-    accent: "#8d5b47",
-    description: "เข้มข้น จัดจ้าน หอมพริกแกงและเครื่องเทศ",
-    provinceIds: [
-      "TH80",
-      "TH81",
-      "TH82",
-      "TH83",
-      "TH84",
-      "TH85",
-      "TH86",
-      "TH90",
-      "TH91",
-      "TH92",
-      "TH93",
-      "TH94",
-      "TH95",
-      "TH96",
-    ],
-  },
-];
+import { dishes, regions } from "../../mock-data/index.js";
 
 export default function RegionalMapSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -184,7 +67,7 @@ export default function RegionalMapSection() {
       "viewBox",
       `${bounds.x - padding} ${bounds.y - padding} ${bounds.width + padding * 2} ${bounds.height + padding * 2}`,
     );
-    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.setAttribute("preserveAspectRatio", "xMinYMid meet");
   }, [activeIndex, selectRegion]);
 
   // เมื่อไม่ได้ชี้แผนที่ ระบบจะสุ่มภูมิภาคใหม่ทุก 15 วินาที
@@ -255,13 +138,14 @@ export default function RegionalMapSection() {
   return (
     <section id="kits" className="home-section scroll-mt-24 bg-[#efe5d8]">
       <div className="home-container">
-        <div className="grid gap-8 lg:grid-cols-[minmax(380px,0.9fr)_minmax(0,1.35fr)] lg:items-start lg:gap-14 xl:gap-20">
+        <div className="grid gap-4 xl:grid-cols-2 xl:items-start xl:gap-12 xl:grid-cols-[minmax(0,3fr)_minmax(0,6fr)]
+        2xl:grid-cols-[minmax(0,20fr)_minmax(0,80fr)]">
           <div
-            className="relative hidden w-full lg:block"
+            className="relative hidden xl:block xl:w-full xl:w-[400px] 2xl:-translate-x-60  3xl:-translate-x-80 2xl:w-[440px]"
             onMouseEnter={() => setIsInteracting(true)}
             onMouseLeave={() => setIsInteracting(false)}
           >
-            <div className="relative h-[650px] w-full xl:h-[750px]">
+            <div className="relative h-[560px] w-full lg:h-[650px] xl:h-[750px]">
               <object
                 ref={mapObjectRef}
                 data={thailandMap}
@@ -311,7 +195,7 @@ export default function RegionalMapSection() {
             </div>
 
             <div
-              className="hide-scrollbar mb-7 flex w-full gap-2 overflow-x-auto pb-1 lg:hidden"
+              className="hide-scrollbar mb-7 flex w-full gap-2 overflow-x-auto pb-1 xl:hidden"
               aria-label="เลือกภูมิภาค"
             >
               {regions.map((region, index) => (
@@ -319,7 +203,7 @@ export default function RegionalMapSection() {
                   key={region.id}
                   type="button"
                   onClick={() => setActiveIndex(index)}
-                  className={`shrink-0 rounded-full border px-5 py-2.5 text-sm font-bold transition-colors ${active.id === region.id ? "border-[#3d2c2e] bg-[#3d2c2e] text-white" : "border-[#cdbdac] bg-white/55 text-[#6f5b4e]"}`}
+                  className={`cursor-pointer shrink-0 rounded-full border px-5 py-2.5 text-xl transition-colors ${active.id === region.id ? "border-[#3d2c2e] bg-[#3d2c2e] text-white" : "border-[#cdbdac] bg-white/55 text-[#6f5b4e]"}`}
                   aria-pressed={active.id === region.id}
                 >
                   {region.label}
@@ -333,10 +217,10 @@ export default function RegionalMapSection() {
                 className="h-3 w-3 rounded-full"
                 style={{ backgroundColor: active.accent }}
               />
-              <span className="font-bold text-[#7b6658]">{active.label}</span>
+              <span className="font-bold text-4xl text-[#5e5046]">{active.label}</span>
             </div>
 
-            <p data-region-content className="mt-2 text-[#6f675f]">
+            <p data-region-content className="mt-2 text-xl text-[#6f675f]">
               {active.description}
             </p>
             <div
@@ -350,22 +234,23 @@ export default function RegionalMapSection() {
                 {[0, 1].map((copyIndex) => (
                   <div
                     key={copyIndex}
-                    className="flex shrink-0 gap-4 pr-4"
+                    className="flex shrink-0 gap-8 pr-4"
                     aria-hidden={copyIndex === 1}
                   >
                     {activeDishes.map((dish) => (
                       <article
                         key={`${copyIndex}-${dish._id}`}
-                        className="group w-[82vw] max-w-[400px] shrink-0 overflow-hidden rounded-2xl bg-[#fdfbf7] shadow-sm transition-shadow duration-300 hover:shadow-lg sm:w-[400px]"
+                        className="group min-h-[580px] max-w-100 shrink-0 overflow-hidden 
+                        rounded-3xl bg-[#fdfbf7] shadow-sm transition-shadow duration-300 hover:shadow-lg w-[480px] "
                       >
                         <img
                           src={dish.imageUrl[0]}
                           alt={copyIndex === 0 ? dish.nameTh : ""}
-                          className="h-[180px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
+                          className="h-[400px] w-[full] object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
                         />
-                        <div className="p-4">
-                          <h4 className="font-bold text-2xl">{dish.nameTh}</h4>
-                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#766b63]">
+                        <div className="p-7">
+                          <h4 className="font-bold text-3xl">{dish.nameTh}</h4>
+                          <p className="mt-3 line-clamp-2 text-lg leading-5 text-[#766b63]">
                             {dish.description}
                           </p>
                         </div>
