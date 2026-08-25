@@ -3,6 +3,7 @@ import { Layout } from "./components/index.js";
 import HomePage from "./pages/Home.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrderSuccess from "./pages/OrderSuccess.jsx";
+import ElementQuizPage from "./pages/ElementQuizPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "order-success",
         element: <OrderSuccess />,
+      },
+      {
+        path: "element-quiz",
+        element: <ElementQuizPage />,
       },
     ],
   },
