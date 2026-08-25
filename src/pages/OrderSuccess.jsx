@@ -1,173 +1,97 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-
-const subscriptionPlans = {
-  S: { name: "Size S", detail: "4 Kits / สัปดาห์" },
-  M: { name: "Size M", detail: "6 Kits / สัปดาห์" },
-  L: { name: "Size L", detail: "8 Kits / สัปดาห์" },
-  XL: { name: "Size XL", detail: "12 Kits / สัปดาห์" },
-};
-
-const paymentMethodLabels = {
-  PromptPay: "พร้อมเพย์ (ชำระเรียบร้อย)",
-  CreditCard: "บัตรเครดิต / เดบิต (ชำระเรียบร้อย)",
-  COD: "เก็บเงินปลายทาง",
-};
+import { useLocation, Link } from "react-router-dom";
 
 export default function OrderSuccess() {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  // ดึงข้อมูล payload จากหน้า Checkout (มี Mock Data สำรองให้กรณีเข้าตรง)
-  const orderData = location.state || {
-    orderId: "TT-892134",
-    orderType: "alacarte",
-    items: [
-      { name: "ชุดทำต้มยำกุ้งแม่น้ำ (ภาคกลาง)", price: 350, quantity: 2 },
-      { name: "ชุดทำแกงฮังเลหมู (ภาคเหนือ)", price: 320, quantity: 1 },
-    ],
+  // รับ data จากการ navigate หรือใช้ mock data ไว้โชว์ก่อนได้
+  const orderData = location.state?.order || {
+    orderId: "ORD-882940",
+    createdAt: new Date().toLocaleDateString("th-TH"),
+    grandTotal: 959,
+    earnedPoints: 80,
+    deliveryDate: "12 พ.ย.",
     shippingAddress: {
-      fullName: "สมชาย ใจดี",
+      fullName: "ณัฐชา สุขใจ",
       phone: "081-234-5678",
-      address: "123/45 ถนนวิภาวดีรังสิต แขวงจตุจักร",
-      province: "กรุงเทพมหานคร",
-      postalCode: "10900",
+      address: "123/45 ถนนวงศ์สว่าง บางซื่อ กรุงเทพมหานคร 10800",
     },
-    totalAmount: 1080,
-    earnedPoints: 0,
-    paymentMethod: "PromptPay",
+    paymentMethod: "PROMPTPAY",
   };
 
-  const {
-    orderId,
-    orderType,
-    items,
-    shippingAddress,
-    totalAmount,
-    earnedPoints,
-    paymentMethod,
-  } = orderData;
-
   return (
-    <div className="bg-[#FAF6F0] min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans text-[#3D2E2B] flex justify-center items-center">
-      <div className="max-w-2xl w-full bg-white rounded-3xl p-8 shadow-sm border border-[#E8DFC8] space-y-8">
-        {/* Header สัญลักษณ์ความสำเร็จ */}
-        <div className="text-center space-y-3">
-          <div className="w-16 h-16 bg-[#3D2E2B] text-white rounded-full flex items-center justify-center mx-auto text-2xl shadow-md">
-            ✓
-          </div>
-          <span className="text-xs font-semibold text-[#8C7A6B] tracking-widest uppercase block">
-            ORDER CONFIRMED
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#3D2E2B]">
-            สั่งซื้อสำเร็จเรียบร้อย!
-          </h1>
-          <p className="text-xs sm:text-sm text-[#8C7A6B]">
-            ขอบคุณสำหรับการสั่งซื้อ หมายเลขออเดอร์ของคุณคือ{" "}
-            <span className="font-bold text-[#3D2E2B]">{orderId}</span>
+    <div className="min-h-screen bg-[#fdfbf7] py-12 px-4 sm:px-6 lg:px-8 text-[#2f2119]">
+      <div className="max-w-2xl mx-auto bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-8 shadow-sm text-center">
+        {/* Icon Success */}
+        <div className="w-20 h-20 bg-[#f6ede5] border border-[#e8dfd1] text-[#8d593a] rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
+          🎉
+        </div>
+
+        <span className="text-xs font-bold uppercase tracking-[.22em] text-[#8d593a]">
+          ORDER CONFIRMED
+        </span>
+        <h1 className="text-3xl font-bold text-[#3d2c2e] mt-1 mb-2">
+          สั่งซื้อเรียบร้อยแล้ว!
+        </h1>
+        <p className="text-sm text-[#6f675f] mb-6">
+          ขอบคุณที่สั่งซื้อ Cooking Kit กับธาตุแท้
+          เรากำลังเตรียมวัตถุดิบสดใหม่ส่งตรงถึงบ้านคุณ
+        </p>
+
+        {/* Highlight Bonus Points */}
+        <div className="bg-[#f6ede5] border border-[#e8dfd1] rounded-2xl p-4 mb-6">
+          <p className="text-xs text-[#8d593a] font-semibold">
+            แต้มสะสมที่จะได้รับจากคำสั่งซื้อนี้
+          </p>
+          <p className="text-2xl font-bold text-[#3d2c2e] mt-0.5">
+            +{orderData.earnedPoints} Points 🌟
           </p>
         </div>
 
-        {/* รายละเอียดคำสั่งซื้อ */}
-        <div className="bg-[#FAF6F0] p-6 rounded-2xl border border-[#E8DFC8] space-y-4">
-          <div className="flex justify-between items-center border-b border-[#E8DFC8] pb-3">
-            <h2 className="font-bold text-sm text-[#3D2E2B]">รายการสินค้า</h2>
-            <span className="text-xs font-semibold bg-[#3D2E2B] text-white px-3 py-1 rounded-full">
-              {orderType === "subscription"
-                ? "Subscription Plan"
-                : "A La Carte"}
+        {/* Order Details Card */}
+        <div className="bg-white border border-[#e8dfd1] rounded-2xl p-5 text-left text-xs space-y-3 mb-8">
+          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
+            <span className="text-[#6f675f]">หมายเลขคำสั่งซื้อ:</span>
+            <span className="font-bold text-[#3d2c2e]">
+              {orderData.orderId}
             </span>
           </div>
-
-          <div className="space-y-3">
-            {orderType === "subscription" ? (
-              <div className="flex justify-between text-sm">
-                <div>
-                  <p className="font-bold text-[#3D2E2B]">
-                    {subscriptionPlans[items[0]?.plan]?.name || "Custom Plan"}
-                  </p>
-                  <p className="text-xs text-[#8C7A6B]">
-                    {subscriptionPlans[items[0]?.plan]?.detail ||
-                      "จัดส่งรายสัปดาห์"}
-                  </p>
-                </div>
-                <span className="font-bold text-[#8C6239]">
-                  ฿{totalAmount - 60}
-                </span>
-              </div>
-            ) : (
-              items?.map((item, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span className="text-[#3D2E2B]">
-                    {item.name}{" "}
-                    <span className="text-[#8C7A6B] text-xs">
-                      x{item.quantity}
-                    </span>
-                  </span>
-                  <span className="font-semibold text-[#8C6239]">
-                    ฿{item.price * item.quantity}
-                  </span>
-                </div>
-              ))
-            )}
+          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
+            <span className="text-[#6f675f]">รอบการจัดส่ง:</span>
+            <span className="font-bold text-[#8d593a]">
+              {orderData.deliveryDate} (จัดส่งช่วงเช้า)
+            </span>
           </div>
-
-          {/* แต้มสะสมที่ได้รับ (ถ้ามี) */}
-          {earnedPoints > 0 && (
-            <div className="pt-3 border-t border-[#E8DFC8] flex justify-between items-center text-xs">
-              <span className="text-[#8C7A6B]">🎉 แต้มสะสมที่จะได้รับ</span>
-              <span className="font-bold text-[#8C6239]">
-                +{earnedPoints} คะแนน
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* ข้อมูลการจัดส่ง & ชำระเงิน */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
-          {/* ที่อยู่จัดส่ง */}
-          <div className="space-y-1 bg-white p-4 rounded-xl border border-[#E8DFC8]">
-            <p className="font-bold text-[#8C7A6B] uppercase tracking-wider mb-2">
-              ที่อยู่สำหรับจัดส่ง
-            </p>
-            <p className="font-bold text-[#3D2E2B] text-sm">
-              {shippingAddress?.fullName}
-            </p>
-            <p className="text-[#8C7A6B]">{shippingAddress?.phone}</p>
-            <p className="text-[#8C7A6B] leading-relaxed">
-              {shippingAddress?.address} {shippingAddress?.province}{" "}
-              {shippingAddress?.postalCode}
-            </p>
+          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
+            <span className="text-[#6f675f]">ผู้รับ:</span>
+            <span className="font-medium text-[#2f2119]">
+              {orderData.shippingAddress.fullName} (
+              {orderData.shippingAddress.phone})
+            </span>
           </div>
-
-          {/* สรุปชำระเงิน */}
-          <div className="space-y-1 bg-white p-4 rounded-xl border border-[#E8DFC8] flex flex-col justify-between">
-            <div>
-              <p className="font-bold text-[#8C7A6B] uppercase tracking-wider mb-2">
-                วิธีชำระเงิน
-              </p>
-              <p className="font-bold text-[#3D2E2B] text-sm">
-                {paymentMethodLabels[paymentMethod] || paymentMethod}
-              </p>
-            </div>
-            <div className="pt-3 border-t border-[#F3EBDD] flex justify-between items-end">
-              <span className="text-[#8C7A6B]">ยอดชำระสุทธิ</span>
-              <span className="text-lg font-extrabold text-[#8C6239]">
-                ฿{totalAmount}
-              </span>
-            </div>
+          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
+            <span className="text-[#6f675f]">ที่อยู่จัดส่ง:</span>
+            <span className="font-medium text-[#2f2119] text-right max-w-[60%]">
+              {orderData.shippingAddress.address}
+            </span>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="text-sm font-bold text-[#3d2c2e]">
+              ยอดชำระสุทธิ:
+            </span>
+            <span className="text-base font-bold text-[#8d593a]">
+              ฿{orderData.grandTotal.toLocaleString()} THB
+            </span>
           </div>
         </div>
 
-        {/* ปุ่มกลับหน้าหลัก */}
-        <div className="pt-2 text-center space-y-3">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="w-full bg-[#3D2E2B] text-white py-3.5 rounded-full font-bold text-sm hover:bg-[#2A1F1D] transition-all shadow-md active:scale-[0.99]"
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            to="/"
+            className="bg-[#3d2c2e] text-white px-8 py-3.5 rounded-full font-bold hover:bg-[#8d593a] transition-colors shadow-md text-sm"
           >
-            กลับสู่หน้าหลัก
-          </button>
+            กลับหน้าหลัก
+          </Link>
         </div>
       </div>
     </div>

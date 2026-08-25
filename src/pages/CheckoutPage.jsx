@@ -1,545 +1,515 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-const initialCartItems = [
-  {
-    id: "1",
-    name: "ชุดทำต้มยำกุ้งแม่น้ำ (ภาคกลาง)",
-    price: 350,
-    quantity: 2,
-    purchaseType: "alacarte",
-  },
-  {
-    id: "2",
-    name: "ชุดทำแกงฮังเลหมู (ภาคเหนือ)",
-    price: 320,
-    quantity: 1,
-    purchaseType: "alacarte",
-  },
-];
-
-const subscriptionPlans = [
-  { id: "S", name: "Size S", detail: "4 Kits / สัปดาห์", price: 599 },
-  { id: "M", name: "Size M", detail: "6 Kits / สัปดาห์ (ยอดนิยม)", price: 899 },
-  { id: "L", name: "Size L", detail: "8 Kits / สัปดาห์", price: 1169 },
-  { id: "XL", name: "Size XL", detail: "12 Kits / สัปดาห์", price: 1599 },
-];
+import { users } from "../mock-data/users";
+import {
+  SUBSCRIPTION_PLANS,
+  SHIPPING_FEE,
+  PAYMENT_METHODS,
+} from "../constants/checkout";
+import {
+  calculateEarnedPoints,
+  calculateGrandTotal,
+  generatePromptPayQrUrl,
+} from "../utils/checkoutHelpers";
 
 export default function CheckoutPage() {
-  const navigate = useNavigate();
-  const [currentUserId] = useState("user_01");
-  const [orderType, setOrderType] = useState("alacarte");
-  const [selectedPlan, setSelectedPlan] = useState("M");
+  const [currentUserId] = useState("USR-001");
+  const currentUser = users.find((u) => u.id === currentUserId) || users[0];
+
+  const [selectedPlan] = useState(SUBSCRIPTION_PLANS.M);
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    phone: "",
-    address: "",
-    province: "",
-    postalCode: "",
-    paymentMethod: "PromptPay",
+    fullName: `${currentUser.firstName} ${currentUser.lastName}`,
+    phone: currentUser.phone || "",
+    address: "123/45 ถนนวงศ์สว่าง",
+    district: "บางซื่อ",
+    province: "กรุงเทพมหานคร",
+    zipcode: "10800",
+    deliveryDate: "12",
   });
 
+  // State สำหรับเก็บข้อมูลบัตรเครดิต
   const [cardData, setCardData] = useState({
     cardNumber: "",
-    expDate: "",
-    cvv: "",
+    cardName: "",
+    expiry: "",
+    cvc: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [pendingOrderPayload, setPendingOrderPayload] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS.PROMPTPAY);
 
-  const calculateSubtotal = () => {
-    if (orderType === "subscription") {
-      const plan = subscriptionPlans.find((p) => p.id === selectedPlan);
-      return plan ? plan.price : 0;
-    }
-    return initialCartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
-  };
+  const itemsSubtotal = selectedPlan.price;
+  const earnedPoints = calculateEarnedPoints(itemsSubtotal);
+  const grandTotal = calculateGrandTotal(itemsSubtotal);
 
-  const shippingFee = 60;
-  const subtotal = calculateSubtotal();
-  const totalAmount = subtotal + shippingFee;
-  const earnedPoints =
-    totalAmount >= 1499 ? Math.floor(totalAmount / 100) * 10 : 0;
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    // ตรวจสอบที่อยู่จัดส่ง
-    if (!formData.fullName.trim())
-      newErrors.fullName = "กรุณากรอกชื่อ-นามสกุล ผู้รับ";
-    if (!formData.phone.trim()) newErrors.phone = "กรุณากรอกเบอร์โทรศัพท์";
-    if (!formData.address.trim()) newErrors.address = "กรุณากรอกที่อยู่จัดส่ง";
-    if (!formData.province.trim()) newErrors.province = "กรุณากรอกจังหวัด";
-    if (!formData.postalCode.trim())
-      newErrors.postalCode = "กรุณากรอกรหัสไปรษณีย์";
-
-    // ตรวจสอบแพ็กเกจกรณีเลือก Subscription
-    if (orderType === "subscription" && !selectedPlan) {
-      newErrors.selectedPlan = "กรุณาเลือกแพ็กเกจ Subscription";
-    }
-
-    // ตรวจสอบวิธีชำระเงิน
-    if (!formData.paymentMethod) {
-      newErrors.paymentMethod = "กรุณาเลือกวิธีชำระเงิน";
-    }
-
-    // ตรวจสอบบัตรเครดิต
-    if (formData.paymentMethod === "CreditCard") {
-      if (!cardData.cardNumber.trim())
-        newErrors.cardNumber = "กรุณากรอกหมายเลขบัตรเครดิต";
-      if (!cardData.expDate.trim()) newErrors.expDate = "กรุณากรอกวันหมดอายุ";
-      if (!cardData.cvv.trim()) newErrors.cvv = "กรุณากรอก CVV";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const promptPayQrUrl = generatePromptPayQrUrl("0812345678", grandTotal);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (errors[name]) setErrors({ ...errors, [name]: null });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCardChange = (e) => {
+  const handleCardInputChange = (e) => {
     const { name, value } = e.target;
-    setCardData({ ...cardData, [name]: value });
-    if (errors[name]) setErrors({ ...errors, [name]: null });
+    setCardData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmitOrder = (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    const payload = {
-      orderId: "TT-" + Math.floor(100000 + Math.random() * 900000),
-      userId: currentUserId,
-      orderType,
-      items:
-        orderType === "alacarte" ? initialCartItems : [{ plan: selectedPlan }],
-      shippingAddress: formData,
-      totalAmount,
-      earnedPoints,
-      paymentMethod: formData.paymentMethod,
-    };
-
-    if (formData.paymentMethod === "PromptPay") {
-      setPendingOrderPayload(payload);
-      setShowPaymentModal(true);
-    } else {
-      navigate("/order-success", { state: payload });
-    }
-  };
-
-  const handleConfirmPromptPay = () => {
-    setShowPaymentModal(false);
-    navigate("/order-success", { state: pendingOrderPayload });
+    alert(
+      `ยืนยันการสั่งซื้อสำเร็จ! ยอดชำระ ฿${grandTotal.toLocaleString()} (คุณจะได้รับ ${earnedPoints} แต้ม)`,
+    );
   };
 
   return (
-    <div className="bg-[#FAF6F0] min-h-screen py-10 px-4 sm:px-6 lg:px-8 font-sans text-[#3D2E2B]">
+    <div className="min-h-screen bg-[#fdfbf7] py-10 px-4 sm:px-6 lg:px-8 text-[#2f2119]">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8 border-b border-[#E8DFC8] pb-6">
-          <span className="text-xs font-semibold text-[#8C7A6B] tracking-widest uppercase">
-            CHECKOUT FLOW
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <span className="text-xs font-bold uppercase tracking-[.22em] text-[#8d593a]">
+            SECURE CHECKOUT
           </span>
-          <h1 className="text-3xl font-bold text-[#3D2E2B]">
-            สรุปรายการสั่งซื้อ & ชำระเงิน
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#3d2c2e] mt-1">
+            ยืนยันการสั่งซื้อ
           </h1>
+        </div>
+
+        {/* User Status Bar */}
+        <div className="bg-[#f6ede5] border border-[#e8dfd1] rounded-2xl p-4 mb-8 flex justify-between items-center shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#3d2c2e] text-white flex items-center justify-center font-bold">
+              {currentUser.firstName ? currentUser.firstName.charAt(0) : "U"}
+            </div>
+            <div>
+              <h2 className="font-bold text-[#3d2c2e]">
+                {currentUser.firstName} {currentUser.lastName}
+              </h2>
+              <span className="text-xs px-2.5 py-0.5 bg-[#8d593a] text-white rounded-full font-medium">
+                {currentUser.tierStatus} Member
+              </span>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-[#6f675f]">แต้มสะสมปัจจุบัน</p>
+            <p className="font-bold text-lg text-[#8d593a]">
+              {currentUser.biaPoints
+                ? currentUser.biaPoints.toLocaleString()
+                : 0}{" "}
+              แต้ม
+            </p>
+          </div>
         </div>
 
         <form
           onSubmit={handleSubmitOrder}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
-          <div className="lg:col-span-7 space-y-6">
-            {/* Step 1: เลือกรูปแบบการสั่งซื้อ */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E8DFC8]">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#3D2E2B] text-white text-xs flex items-center justify-center">
-                  1
-                </span>
-                เลือกรูปแบบการสั่งซื้อ
-              </h2>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setOrderType("alacarte")}
-                  className={`p-4 rounded-xl border text-center font-semibold transition-all text-sm ${
-                    orderType === "alacarte"
-                      ? "border-[#3D2E2B] bg-[#3D2E2B] text-white shadow-sm"
-                      : "border-[#E8DFC8] bg-[#FAF6F0] text-[#3D2E2B]"
-                  }`}
-                >
-                  ซื้อรายชุด (A La Carte)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOrderType("subscription")}
-                  className={`p-4 rounded-xl border text-center font-semibold transition-all text-sm ${
-                    orderType === "subscription"
-                      ? "border-[#3D2E2B] bg-[#3D2E2B] text-white shadow-sm"
-                      : "border-[#E8DFC8] bg-[#FAF6F0] text-[#3D2E2B]"
-                  }`}
-                >
-                  สมัคร Subscription รายสัปดาห์
-                </button>
+          {/* ฝั่งซ้าย: ข้อมูลการจัดส่ง & ช่องทางชำระเงิน */}
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            {/* 1. ข้อมูลการจัดส่ง */}
+            <div className="bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-xl">🚚</span>
+                <h2 className="text-xl font-bold text-[#3d2c2e]">
+                  ข้อมูลการจัดส่ง
+                </h2>
               </div>
 
-              {/* แสดงตัวเลือก Size S/M/L/XL เมื่อเลือก Subscription */}
-              {orderType === "subscription" && (
-                <div className="mt-4 pt-4 border-t border-[#F3EBDD] space-y-3">
-                  <label className="block text-xs font-semibold text-[#8C7A6B]">
-                    เลือกขนาดแพ็กเกจ (Subscription Plan) *
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {subscriptionPlans.map((plan) => (
-                      <button
-                        key={plan.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedPlan(plan.id);
-                          if (errors.selectedPlan)
-                            setErrors({ ...errors, selectedPlan: null });
-                        }}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          selectedPlan === plan.id
-                            ? "border-[#8C6239] bg-[#FAF6F0] ring-2 ring-[#8C6239]"
-                            : "border-[#E8DFC8] bg-white hover:bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-bold text-sm text-[#3D2E2B]">
-                            {plan.name}
-                          </span>
-                          <span className="font-extrabold text-sm text-[#8C6239]">
-                            ฿{plan.price}
-                          </span>
-                        </div>
-                        <p className="text-xs text-[#8C7A6B]">{plan.detail}</p>
-                      </button>
-                    ))}
-                  </div>
-                  {errors.selectedPlan && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">
-                      ⚠️ {errors.selectedPlan}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Step 2: ข้อมูลจัดส่ง & ช่องทางชำระเงิน */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E8DFC8]">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#3D2E2B] text-white text-xs flex items-center justify-center">
-                  2
-                </span>
-                ที่อยู่สำหรับจัดส่ง
-              </h2>
-
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    ชื่อ - นามสกุล
+                  </label>
                   <input
                     type="text"
                     name="fullName"
-                    placeholder="ชื่อ-นามสกุล ผู้รับ *"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className={`w-full p-3 rounded-xl border text-sm outline-none transition-all ${
-                      errors.fullName
-                        ? "border-red-500 bg-red-50/20"
-                        : "border-[#E8DFC8] focus:border-[#3D2E2B]"
-                    }`}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
                   />
-                  {errors.fullName && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">
-                      ⚠️ {errors.fullName}
-                    </p>
-                  )}
                 </div>
-
                 <div>
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    เบอร์โทรศัพท์
+                  </label>
                   <input
-                    type="text"
+                    type="tel"
                     name="phone"
-                    placeholder="เบอร์โทรศัพท์ *"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className={`w-full p-3 rounded-xl border text-sm outline-none transition-all ${
-                      errors.phone
-                        ? "border-red-500 bg-red-50/20"
-                        : "border-[#E8DFC8] focus:border-[#3D2E2B]"
-                    }`}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
                   />
-                  {errors.phone && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">
-                      ⚠️ {errors.phone}
-                    </p>
-                  )}
                 </div>
-
-                <div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    ที่อยู่จัดส่ง
+                  </label>
                   <textarea
                     name="address"
-                    placeholder="ที่อยู่จัดส่ง *"
-                    rows={3}
+                    rows="2"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className={`w-full p-3 rounded-xl border text-sm outline-none transition-all ${
-                      errors.address
-                        ? "border-red-500 bg-red-50/20"
-                        : "border-[#E8DFC8] focus:border-[#3D2E2B]"
-                    }`}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
                   />
-                  {errors.address && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">
-                      ⚠️ {errors.address}
-                    </p>
-                  )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <input
-                      type="text"
-                      name="province"
-                      placeholder="จังหวัด *"
-                      value={formData.province}
-                      onChange={handleInputChange}
-                      className={`w-full p-3 rounded-xl border text-sm outline-none transition-all ${
-                        errors.province
-                          ? "border-red-500 bg-red-50/20"
-                          : "border-[#E8DFC8] focus:border-[#3D2E2B]"
-                      }`}
-                    />
-                    {errors.province && (
-                      <p className="text-red-500 text-xs mt-1 font-semibold">
-                        ⚠️ {errors.province}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <input
-                      type="text"
-                      name="postalCode"
-                      placeholder="รหัสไปรษณีย์ *"
-                      value={formData.postalCode}
-                      onChange={handleInputChange}
-                      className={`w-full p-3 rounded-xl border text-sm outline-none transition-all ${
-                        errors.postalCode
-                          ? "border-red-500 bg-red-50/20"
-                          : "border-[#E8DFC8] focus:border-[#3D2E2B]"
-                      }`}
-                    />
-                    {errors.postalCode && (
-                      <p className="text-red-500 text-xs mt-1 font-semibold">
-                        ⚠️ {errors.postalCode}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* เลือกวิธีชำระเงิน */}
-                <div className="pt-4 border-t border-[#F3EBDD]">
-                  <label className="block text-xs font-semibold text-[#8C7A6B] mb-2">
-                    วิธีชำระเงิน *
+                <div>
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    อำเภอ/เขต
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { key: "PromptPay", label: "พร้อมเพย์" },
-                      { key: "CreditCard", label: "บัตรเครดิต" },
-                      { key: "COD", label: "เก็บเงินปลายทาง" },
-                    ].map((item) => (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, paymentMethod: item.key });
-                          if (errors.paymentMethod)
-                            setErrors({ ...errors, paymentMethod: null });
-                        }}
-                        className={`p-3 rounded-xl border text-xs font-semibold transition-all ${
-                          formData.paymentMethod === item.key
-                            ? "border-[#3D2E2B] bg-[#3D2E2B] text-white shadow-sm"
-                            : "border-[#E8DFC8] bg-white text-[#3D2E2B]"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                  {errors.paymentMethod && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">
-                      ⚠️ {errors.paymentMethod}
-                    </p>
-                  )}
+                  <input
+                    type="text"
+                    name="district"
+                    value={formData.district}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
+                  />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    จังหวัด
+                  </label>
+                  <input
+                    type="text"
+                    name="province"
+                    value={formData.province}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                    รหัสไปรษณีย์
+                  </label>
+                  <input
+                    type="text"
+                    name="zipcode"
+                    value={formData.zipcode}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                    required
+                  />
+                </div>
+              </div>
 
-                {/* ฟอร์มกรอกบัตรเครดิต */}
-                {formData.paymentMethod === "CreditCard" && (
-                  <div className="mt-4 p-4 rounded-xl bg-[#FAF6F0] border border-[#E8DFC8] space-y-3">
-                    <p className="text-xs font-bold text-[#3D2E2B]">
-                      ข้อมูลบัตรเครดิต / เดบิต
+              {/* เลือกรอบรับสินค้า */}
+              <div className="mt-6 border-t border-[#e8dfd1] pt-4">
+                <label className="block text-xs font-semibold text-[#6f675f] mb-2">
+                  เลือกรอบรับสินค้า (จัดส่งทุกวันอาทิตย์)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { day: "SUN", date: "12", month: "พ.ย." },
+                    { day: "SUN", date: "19", month: "พ.ย." },
+                    { day: "SUN", date: "26", month: "พ.ย." },
+                  ].map((item) => (
+                    <button
+                      key={item.date}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, deliveryDate: item.date })
+                      }
+                      className={`p-3 rounded-2xl border text-center transition-all ${
+                        formData.deliveryDate === item.date
+                          ? "bg-[#3d2c2e] text-white border-[#3d2c2e] shadow-md"
+                          : "bg-white text-[#2f2119] border-[#e8dfd1] hover:border-[#8d593a]"
+                      }`}
+                    >
+                      <div className="text-[10px] opacity-80">{item.day}</div>
+                      <div className="text-xl font-bold">{item.date}</div>
+                      <div className="text-[10px] opacity-80">{item.month}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 2. ช่องทางการชำระเงิน */}
+            <div className="bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-xl">💳</span>
+                <h2 className="text-xl font-bold text-[#3d2c2e]">
+                  ช่องทางการชำระเงิน
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                {/* PromptPay */}
+                <label
+                  className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
+                    paymentMethod === PAYMENT_METHODS.PROMPTPAY
+                      ? "border-[#8d593a] bg-[#f6ede5]"
+                      : "border-[#e8dfd1] bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value={PAYMENT_METHODS.PROMPTPAY}
+                      checked={paymentMethod === PAYMENT_METHODS.PROMPTPAY}
+                      onChange={() =>
+                        setPaymentMethod(PAYMENT_METHODS.PROMPTPAY)
+                      }
+                      className="accent-[#8d593a]"
+                    />
+                    <span className="font-semibold text-sm">
+                      สแกน QR Code พร้อมเพย์
+                    </span>
+                  </div>
+                  <span className="text-xs bg-[#8d593a]/10 text-[#8d593a] px-2 py-1 rounded font-bold">
+                    PromptPay
+                  </span>
+                </label>
+
+                {paymentMethod === PAYMENT_METHODS.PROMPTPAY && (
+                  <div className="p-5 bg-white border border-[#e8dfd1] rounded-2xl text-center my-2">
+                    <span className="inline-block text-xs bg-[#f6ede5] text-[#8d593a] px-3 py-1 rounded-full font-medium mb-3">
+                      ทดลองสแกนเพื่อชำระเงิน
+                    </span>
+                    <div className="flex justify-center mb-3">
+                      <img
+                        src={promptPayQrUrl}
+                        alt="PromptPay QR Code"
+                        className="w-48 h-48 border p-2 rounded-xl bg-white shadow-inner"
+                      />
+                    </div>
+                    <p className="text-xs text-[#6f675f]">
+                      เมื่อชำระเงินเสร็จสิ้น ระบบจะทำการยืนยันให้อัตโนมัติใน 1-2
+                      นาที
                     </p>
+                  </div>
+                )}
+
+                {/* บัตรเครดิต / เดบิต */}
+                <label
+                  className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
+                    paymentMethod === PAYMENT_METHODS.CREDIT_CARD
+                      ? "border-[#8d593a] bg-[#f6ede5]"
+                      : "border-[#e8dfd1] bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value={PAYMENT_METHODS.CREDIT_CARD}
+                      checked={paymentMethod === PAYMENT_METHODS.CREDIT_CARD}
+                      onChange={() =>
+                        setPaymentMethod(PAYMENT_METHODS.CREDIT_CARD)
+                      }
+                      className="accent-[#8d593a]"
+                    />
+                    <span className="font-semibold text-sm">
+                      บัตรเครดิต / เดบิต
+                    </span>
+                  </div>
+                  <span className="text-xs text-[#6f675f]">
+                    💳 Visa / Mastercard
+                  </span>
+                </label>
+
+                {/* 🟢 ฟอร์มกรอกข้อมูลบัตรเครดิต (แสดงเฉพาะเมื่อเลือกบัตรเครดิต) */}
+                {paymentMethod === PAYMENT_METHODS.CREDIT_CARD && (
+                  <div className="p-5 bg-white border border-[#e8dfd1] rounded-2xl space-y-4 my-2">
                     <div>
+                      <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                        หมายเลขบัตร
+                      </label>
                       <input
                         type="text"
                         name="cardNumber"
-                        placeholder="หมายเลขบัตร 16 หลัก"
+                        placeholder="1234 5678 9012 3456"
+                        maxLength="19"
                         value={cardData.cardNumber}
-                        onChange={handleCardChange}
-                        className={`w-full p-2.5 rounded-lg border text-sm bg-white outline-none ${
-                          errors.cardNumber
-                            ? "border-red-500"
-                            : "border-[#E8DFC8]"
-                        }`}
+                        onChange={handleCardInputChange}
+                        className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                        required={paymentMethod === PAYMENT_METHODS.CREDIT_CARD}
                       />
-                      {errors.cardNumber && (
-                        <p className="text-red-500 text-xs mt-1 font-semibold">
-                          ⚠️ {errors.cardNumber}
-                        </p>
-                      )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                        ชื่อบนบัตร
+                      </label>
+                      <input
+                        type="text"
+                        name="cardName"
+                        placeholder="NATCHA SOOKJAI"
+                        value={cardData.cardName}
+                        onChange={handleCardInputChange}
+                        className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                        required={paymentMethod === PAYMENT_METHODS.CREDIT_CARD}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
+                        <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                          วันหมดอายุ (MM/YY)
+                        </label>
                         <input
                           type="text"
-                          name="expDate"
+                          name="expiry"
                           placeholder="MM/YY"
-                          value={cardData.expDate}
-                          onChange={handleCardChange}
-                          className={`w-full p-2.5 rounded-lg border text-sm bg-white outline-none ${
-                            errors.expDate
-                              ? "border-red-500"
-                              : "border-[#E8DFC8]"
-                          }`}
+                          maxLength="5"
+                          value={cardData.expiry}
+                          onChange={handleCardInputChange}
+                          className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                          required={
+                            paymentMethod === PAYMENT_METHODS.CREDIT_CARD
+                          }
                         />
-                        {errors.expDate && (
-                          <p className="text-red-500 text-xs mt-1 font-semibold">
-                            ⚠️ {errors.expDate}
-                          </p>
-                        )}
                       </div>
-
                       <div>
+                        <label className="block text-xs font-semibold text-[#6f675f] mb-1">
+                          รหัส CVC / CVV
+                        </label>
                         <input
                           type="password"
-                          name="cvv"
-                          placeholder="CVV"
+                          name="cvc"
+                          placeholder="123"
                           maxLength="4"
-                          value={cardData.cvv}
-                          onChange={handleCardChange}
-                          className={`w-full p-2.5 rounded-lg border text-sm bg-white outline-none ${
-                            errors.cvv ? "border-red-500" : "border-[#E8DFC8]"
-                          }`}
+                          value={cardData.cvc}
+                          onChange={handleCardInputChange}
+                          className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
+                          required={
+                            paymentMethod === PAYMENT_METHODS.CREDIT_CARD
+                          }
                         />
-                        {errors.cvv && (
-                          <p className="text-red-500 text-xs mt-1 font-semibold">
-                            ⚠️ {errors.cvv}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>
                 )}
+
+                {/* เก็บเงินปลายทาง (COD) */}
+                <label
+                  className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
+                    paymentMethod === PAYMENT_METHODS.COD
+                      ? "border-[#8d593a] bg-[#f6ede5]"
+                      : "border-[#e8dfd1] bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value={PAYMENT_METHODS.COD}
+                      checked={paymentMethod === PAYMENT_METHODS.COD}
+                      onChange={() => setPaymentMethod(PAYMENT_METHODS.COD)}
+                      className="accent-[#8d593a]"
+                    />
+                    <span className="font-semibold text-sm">
+                      เก็บเงินปลายทาง (COD)
+                    </span>
+                  </div>
+                  <span className="text-xs text-[#6f675f]">💵 เงินสด</span>
+                </label>
               </div>
             </div>
           </div>
 
-          {/* ฝั่งขวา: สรุปคำสั่งซื้อ */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#E8DFC8] sticky top-6">
-              <h2 className="text-lg font-bold mb-4">สรุปยอดคำสั่งซื้อ</h2>
-              <div className="space-y-2 text-sm border-b border-[#F3EBDD] pb-4 mb-4">
-                <div className="flex justify-between text-[#8C7A6B]">
-                  <span>ราคาสินค้า</span>
-                  <span>฿{subtotal}</span>
+          {/* ฝั่งขวา: สรุปคำสั่งซื้อ & ปุ่มชำระเงิน */}
+          <div className="lg:col-span-5">
+            <div className="bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-6 shadow-sm sticky top-6">
+              <div className="flex justify-between items-center border-b border-[#e8dfd1] pb-4 mb-4">
+                <h2 className="text-xl font-bold text-[#3d2c2e]">
+                  สรุปคำสั่งซื้อ
+                </h2>
+                <span className="text-xs bg-[#3d2c2e] text-white px-3 py-1 rounded-full">
+                  {selectedPlan.name} - {selectedPlan.kitsPerWeek} Kits
+                </span>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  {
+                    name: "แกงส้มใต้ปลากะพงยอดยอดมะพร้าว",
+                    desc: "วัตถุดิบสดใหม่ + เครื่องแกงโฮมเมด",
+                    qty: 1,
+                  },
+                  {
+                    name: "ลาบหมูคั่วเมืองเหนือ",
+                    desc: "พริกลาบมะแขว่นหอมๆ",
+                    qty: 1,
+                  },
+                  {
+                    name: "แกงเขียวหวานไก่บ้าน",
+                    desc: "มะเขือเปราะกรอบ + พริกแกงสูตรโบราณ",
+                    qty: 1,
+                  },
+                  {
+                    name: "ต้มข่าไก่เห็ดฟาง",
+                    desc: "รสชาติเข้มข้น หอมกะทิสด",
+                    qty: 1,
+                  },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-start text-xs border-b border-dashed border-[#e8dfd1] pb-3"
+                  >
+                    <div>
+                      <p className="font-bold text-[#2f2119]">{item.name}</p>
+                      <p className="text-[#6f675f]">{item.desc}</p>
+                    </div>
+                    <span className="font-semibold ml-2">x{item.qty}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2 text-sm text-[#6f675f] border-t border-[#e8dfd1] pt-4">
+                <div className="flex justify-between">
+                  <span>มูลค่าสินค้า ({selectedPlan.kitsPerWeek} มื้อ)</span>
+                  <span className="font-medium text-[#2f2119]">
+                    ฿{itemsSubtotal.toLocaleString()}
+                  </span>
                 </div>
-                <div className="flex justify-between text-[#8C7A6B]">
-                  <span>ค่าจัดส่ง</span>
-                  <span>฿{shippingFee}</span>
+                <div className="flex justify-between">
+                  <span>ค่าจัดส่ง (ควบคุมอุณหภูมิ)</span>
+                  <span className="font-medium text-[#2f2119]">
+                    ฿{SHIPPING_FEE}
+                  </span>
                 </div>
-                <div className="flex justify-between text-base font-bold text-[#3D2E2B] pt-2">
-                  <span>ยอดชำระรวม</span>
-                  <span className="text-[#8C6239]">฿{totalAmount}</span>
+              </div>
+
+              <div className="border-t border-[#3d2c2e]/20 pt-4 mt-4 flex justify-between items-baseline">
+                <span className="font-bold text-[#3d2c2e] text-base">
+                  ยอดชำระสุทธิ
+                </span>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-[#8d593a]">
+                    ฿{grandTotal.toLocaleString()}
+                  </span>
+                  <span className="text-xs text-[#6f675f] ml-1">THB</span>
                 </div>
+              </div>
+
+              <div className="mt-3 bg-[#f6ede5] p-2.5 rounded-xl text-center text-xs text-[#8d593a] font-semibold">
+                🎉 คุณจะได้รับแต้มสะสม +{earnedPoints} แต้มจากคำสั่งซื้อนี้
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#3D2E2B] text-white py-3.5 rounded-full font-bold text-sm hover:bg-[#2A1F1D] transition-all shadow-md active:scale-[0.99]"
+                className="w-full mt-6 bg-[#3d2c2e] text-white py-4 rounded-full font-bold hover:bg-[#8d593a] transition-colors shadow-lg flex items-center justify-center gap-2"
               >
-                {formData.paymentMethod === "COD"
-                  ? `ยืนยันสั่งซื้อ (เก็บเงินปลายทาง ฿${totalAmount})`
-                  : `ชำระเงิน (฿${totalAmount})`}
+                <span>ชำระเงิน</span>
+                <span>→</span>
               </button>
+
+              <p className="text-[10px] text-center text-[#6f675f] mt-3">
+                การกดปุ่มชำระเงินถือว่าท่านยอมรับ{" "}
+                <a href="#terms" className="underline">
+                  เงื่อนไขการให้บริการ
+                </a>{" "}
+                ของธาตุแท้
+              </p>
             </div>
           </div>
         </form>
       </div>
-
-      {/* Modal สแกน PromptPay QR Code */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-5 border border-[#E8DFC8]">
-            <div>
-              <span className="text-[10px] font-extrabold tracking-wider bg-[#113566] text-white px-3 py-1 rounded-full uppercase">
-                PromptPay
-              </span>
-              <h3 className="text-lg font-bold text-[#3D2E2B] mt-2">
-                สแกนเพื่อชำระเงิน
-              </h3>
-              <p className="text-xs text-[#8C7A6B] mt-1">
-                เปิดแอปธนาคารของคุณ แล้วสแกน QR Code ด้านล่าง
-              </p>
-            </div>
-
-            <div className="bg-white p-3 rounded-2xl border-2 border-dashed border-[#E8DFC8] inline-block shadow-inner">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=PROMPTPAY_${totalAmount}`}
-                alt="PromptPay QR Code"
-                className="mx-auto rounded-lg"
-              />
-            </div>
-
-            <div className="bg-[#FAF6F0] py-2.5 px-4 rounded-xl border border-[#E8DFC8] flex justify-between items-center text-xs">
-              <span className="text-[#8C7A6B] font-medium">
-                ยอดชำระทั้งสิ้น
-              </span>
-              <span className="text-base font-bold text-[#8C6239]">
-                ฿{totalAmount}
-              </span>
-            </div>
-
-            <div className="flex gap-3 pt-1">
-              <button
-                type="button"
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1 py-3 rounded-xl border border-[#E8DFC8] text-xs font-semibold text-[#8C7A6B] hover:bg-gray-50 transition-all"
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmPromptPay}
-                className="flex-1 py-3 rounded-xl bg-[#3D2E2B] text-white text-xs font-semibold hover:bg-[#2A1F1D] shadow-md transition-all active:scale-95"
-              >
-                ฉันชำระเงินแล้ว
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
