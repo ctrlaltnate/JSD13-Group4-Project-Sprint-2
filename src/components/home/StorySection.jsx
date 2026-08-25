@@ -25,9 +25,6 @@ export default function StorySection() {
           </div>
         </div>
         <div>
-          <span className="text-xs font-bold uppercase tracking-[.22em] text-[#c8b6a6]">
-            Local sourcing
-          </span>
           <h2 className="mt-4 text-3xl font-bold sm:text-5xl">
             สดจากชุมชน เติบโตไปพร้อมเกษตรกร
           </h2>
