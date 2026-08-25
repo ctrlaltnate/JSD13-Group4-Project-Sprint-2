@@ -8,21 +8,20 @@
 
 โปรเจกต์นี้พัฒนาด้วย **MERN Stack** (MongoDB, Express, React, Node.js) โดยแบ่งหน้าที่และขอบเขตงานตาม Feature Branch ดังนี้:
 
-| Role / Responsibilities | Frontend (React) | Backend (API & Database) | Git Branch Name |
-| :--- | :--- | :--- | :--- |
-| **1. Admin Product & Validation** | Form Validation, Error UI, Admin Product Form, Register / Login | Admin CRUD (`POST`, `PUT`, `DELETE` `/api/products`) | `feature/admin-crud-validation` |
-| **2. Storefront & Catalog** | Storefront UI, Product List & Detail Cards, Search & Filter | Fetch Products API (`GET` All / Single Product) | `feature/storefront-product-api` |
-| **3. Cart Management** | Cart UI Component, Add/Update/Remove Actions | Cart Operation APIs (`POST` Select, `PUT` Update, `DELETE` Item) | `feature/cart-ui-management-api` |
-| **4. Checkout & Order Flow** | Checkout UI, User ID Context, Order Summary | Fetch User Cart API (`GET` `/api/cart/:user_id`), Checkout & Stock Cut | `feature/checkout-order-summary` |
-| **5. Core Arch & Global Layout** | React Routing, Global Layout (Navbar/Footer), Toast Alert UI | Mongoose Setup, Express Server Config, Centralized Error Middleware | `feature/arch-layout-` |
+| Member | Role / Responsibilities | Frontend (React) | Backend (API & Database) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Nut** | **1. Admin Product & Validation** | Form Validation, Error UI, Admin Product Form, Register / Login | Admin CRUD (`POST`, `PUT`, `DELETE` `/api/products`) | 
+| **Delta** | **2. Storefront & Catalog** | Storefront UI, Product List & Detail Cards, Search & Filter | Fetch Products API (`GET` All / Single Product) | 
+| **Cream** | **3. Cart Management** | Cart UI Component, Add/Update/Remove Actions | Cart Operation APIs (`POST` Select, `PUT` Update, `DELETE` Item) | 
+| **Rin** | **4. Checkout & Order Flow** | Checkout UI, User ID Context, Order Summary | Fetch User Cart API (`GET` `/api/cart/:user_id`), Checkout & Stock Cut | 
+| **Nate** | **5. Core Arch & Global Layout** | React Routing, Global Layout (Navbar/Footer), Toast Alert UI | Mongoose Setup, Express Server Config, Centralized Error Middleware | 
 
 ---
 
-## 👤 Member Roles & Task Details
+## Member Roles & Task Details
 
-### 🧑‍💻 Person 1: Admin Product Management & Form Validation
+### Person 1: Admin Product Management & Form Validation
 > **Goal:** ทำระบบหลังบ้านให้ Admin เพิ่ม/แก้ไข/ลบ เมนู Cooking Kit และ InfoCard โภชนาการ พร้อมตรวจสอบข้อมูล (Validation)
-* **Git Branch:** `feature/admin-crud-validation`
 * **Frontend (React Tasks):**
   * `ProductForm.jsx`: สร้างฟอร์มสร้าง/แก้ไข Cooking Kit (ชื่อเมนู, ภาคอาหาร เช่น เหนือ/ใต้, แคลอรี/โภชนาการ, ราคา, สต็อก, ลิงก์รูปภาพ)
   * **Validation Logic:** ตรวจสอบข้อมูลก่อน 제출 (Submit)
@@ -42,9 +41,8 @@
 
 ---
 
-### 🧑‍💻 Person 2: Product Catalog & Storefront
+### Person 2: Product Catalog & Storefront
 > **Goal:** ทำหน้าร้านฝั่งลูกค้า ดึงรายการ Cooking Kit มาโชว์ พร้อมระบบค้นหาและกรองเมนูอาหารตามสุขภาพ/ภาค/ธาตุเจ้าเรือน
-* **Git Branch:** `feature/storefront-product-api`
 * **Frontend (React Tasks):**
   * `ProductCatalog.jsx`: หน้าหลักแสดงรายการ Cooking Kit ทั้งหมด (ธีมเอิร์ธโทน ใบลาน)
   * `ProductCard.jsx`: การ์ดแสดงผล Cooking Kit แต่ละเมนู (รูปอาหาร, ชื่อเมนู, ภาค, ราคา, แคลอรี, สถานะคงเหลือ)
@@ -57,9 +55,8 @@
 
 ---
 
-### 🧑‍💻 Person 3: Cart Management & State Operations
+### Person 3: Cart Management & State Operations
 > **Goal:** จัดการระบบตะกร้าสินค้า ปรับเพิ่ม-ลดจำนวนเมนู และคำนวณราคาสินค้า/สิทธิ์รับแต้มสะสม
-* **Git Branch:** `feature/cart-ui-management-api`
 * **Frontend (React Tasks):**
   * `CartDrawer.jsx` / `CartPage.jsx`: UI แสดง Cooking Kit ที่อยู่ในตะกร้า
   * `CartItem.jsx`: การ์ดสินค้าแต่ละชิ้นในตะกร้า มีปุ่ม `+` / `-` ปรับจำนวนชุด และปุ่มถังขยะเพื่อลบ
@@ -72,9 +69,8 @@
 
 ---
 
-### 🧑‍💻 Person 4: User Cart Sync & Checkout Flow
+### Person 4: User Cart Sync & Checkout Flow
 > **Goal:** ผูกตะกร้าสินค้ากับ User ID, หน้าชำระเงินสำหรับซื้อรายชุด/สมัคร Subscription รายสัปดาห์ และตัด Stock
-* **Git Branch:** `feature/checkout-order-summary`
 * **Frontend (React Tasks):**
   * `CheckoutPage.jsx`: หน้าสรุปรายการสั่งซื้อ Cooking Kit เลือกรูปแบบการซื้อ (รายชุด A La Carte หรือ Subscription รายสัปดาห์ Size S/M/L/XL) และฟอร์มกรอกที่อยู่จัดส่ง
   * **Checkout Form Validation:** ตรวจสอบที่อยู่จัดส่ง, เบอร์โทรศัพท์, วิธีชำระเงิน พร้อม Error Message
@@ -88,7 +84,6 @@
 
 ### 🧑‍💻 Person 5: Core Infrastructure, App Layout & DB Setup
 > **Goal:** ผู้ดูแลโครงสร้างโปรเจกต์ วางระบบ Database, Routing, Global State และ UI ธีมเอิร์ธโทนประยุกต์
-* **Git Branch:** `feature/arch-layout-`
 * **Frontend (React Tasks):**
   * **App Shell & Routing:** เซ็ตอัป React Router จัดโครงสร้างหน้าหลัก (`App.jsx`, `Layout.jsx`) ในดีไซน์กระเบื้อง/ใบลาน ธีมเอิร์ธโทน
   * `Navbar.jsx` & `Footer.jsx`: ส่วนหัว/ท้ายเว็บไซต์ แสดงโลโก้แบรนด์, เมนูเลือกภาค/ธาตุเจ้าเรือน และ Badge แสดงจำนวน Cooking Kit ในตะกร้าแบบ Dynamic
