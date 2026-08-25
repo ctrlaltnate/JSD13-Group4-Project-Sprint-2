@@ -16,6 +16,7 @@
 | **Rin** | **4. Checkout & Order Flow** | Checkout UI, User ID Context, Order Summary | Fetch User Cart API (`GET` `/api/cart/:user_id`), Checkout & Stock Cut |
 | **Nate** | **5. Core Arch & Global Layout** | React Routing, Global Layout (Navbar/Footer), Toast Alert UI | Mongoose Setup, Express Server Config, Centralized Error Middleware |
 
+
 ---
 
 ## Member Roles & Task Details
