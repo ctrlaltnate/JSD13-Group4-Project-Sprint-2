@@ -363,7 +363,7 @@ export default function FeatureSection() {
               ธาตุแท้ เริ่มจากการ
               <span className="text-[#a56c48]">รู้จักร่างกาย</span>
             </h2>
-            <p className="mt-5 max-w-xl text-[1.04rem] leading-8 text-[#6f675f]">
+            <p className="mt-5 max-w-xl text-xl leading-8 text-[#6f675f]">
               เพราะอาหารที่ดีไม่จำเป็นต้องเหมือนกันสำหรับทุกคน
               เราจึงเปลี่ยนข้อมูลสุขภาพที่ซับซ้อน ให้กลายเป็นมื้อไทยที่เลือกง่าย
               อร่อย และเข้ากับชีวิตประจำวัน
@@ -384,7 +384,7 @@ export default function FeatureSection() {
                   <div className="flex items-baseline gap-2">
                     <h3 className="text-lg font-bold sm:text-xl">{title}</h3>
                   </div>
-                  <p className="mt-1 text-sm leading-6 text-[#6f675f]">
+                  <p className="mt-1 text-lg leading-6 text-[#6f675f]">
                     {text}
                   </p>
                 </div>
@@ -394,7 +394,7 @@ export default function FeatureSection() {
 
           <a
             href="#kits"
-            className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#3d2c2e] px-6 py-3.5 font-bold text-white shadow-[0_12px_30px_rgba(61,44,46,0.2)] transition hover:-translate-y-0.5 hover:bg-[#563f42] sm:w-auto"
+            className="mt-8 text-xl inline-flex w-full items-center justify-center gap-3 rounded-full bg-[#3d2c2e] px-6 py-3.5 font-bold text-white shadow-[0_12px_30px_rgba(61,44,46,0.2)] transition hover:-translate-y-0.5 hover:bg-[#563f42] sm:w-auto"
           >
             สำรวจเมนูที่ใช่สำหรับคุณ
             <span aria-hidden="true">→</span>
