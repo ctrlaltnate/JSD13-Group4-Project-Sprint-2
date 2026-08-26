@@ -1,11 +1,10 @@
 export const SHIPPING_FEE = 60;
 
 export const POINT_CALCULATION = {
-  BASE_AMOUNT: 100,
-  POINTS_PER_BASE: 10,
-  MIN_AMOUNT_TO_EARN: 0,
+  MIN_AMOUNT_TO_EARN: 1499,
+  BASE_AMOUNT: 10,
+  POINTS_PER_BASE: 1,
 };
-
 export const SUBSCRIPTION_PLANS = {
   S: {
     id: "S",

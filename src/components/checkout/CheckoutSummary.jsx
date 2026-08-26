@@ -1,22 +1,8 @@
 import React from "react";
 import { SHIPPING_FEE } from "../../constants/checkout";
 
-const DEFAULT_ITEMS = [
-  {
-    name: "แกงส้มใต้ปลากะพงยอดยอดมะพร้าว",
-    desc: "วัตถุดิบสดใหม่ + เครื่องแกงโฮมเมด",
-    qty: 1,
-  },
-  { name: "ลาบหมูคั่วเมืองเหนือ", desc: "พริกลาบมะแขว่นหอมๆ", qty: 1 },
-  {
-    name: "แกงเขียวหวานไก่บ้าน",
-    desc: "มะเขือเปราะกรอบ + พริกแกงสูตรโบราณ",
-    qty: 1,
-  },
-  { name: "ต้มข่าไก่เห็ดฟาง", desc: "รสชาติเข้มข้น หอมกะทิสด", qty: 1 },
-];
-
 export default function CheckoutSummary({
+  cartItems = [], // 🔗 รับ cartItems เป็น Prop แทนการใช้ DEFAULT_ITEMS แบบเดิม
   selectedPlan,
   itemsSubtotal,
   grandTotal,
@@ -26,29 +12,45 @@ export default function CheckoutSummary({
     <div className="bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-6 shadow-sm sticky top-6">
       <div className="flex justify-between items-center border-b border-[#e8dfd1] pb-4 mb-4">
         <h2 className="text-xl font-bold text-[#3d2c2e]">สรุปคำสั่งซื้อ</h2>
-        <span className="text-xs bg-[#3d2c2e] text-white px-3 py-1 rounded-full">
-          {selectedPlan.name} - {selectedPlan.kitsPerWeek} Kits
-        </span>
+        {selectedPlan && (
+          <span className="text-xs bg-[#3d2c2e] text-white px-3 py-1 rounded-full">
+            {selectedPlan.name} - {selectedPlan.kitsPerWeek} Kits
+          </span>
+        )}
       </div>
 
-      <div className="space-y-4 mb-6">
-        {DEFAULT_ITEMS.map((item, idx) => (
-          <div
-            key={idx}
-            className="flex justify-between items-start text-xs border-b border-dashed border-[#e8dfd1] pb-3"
-          >
-            <div>
-              <p className="font-bold text-[#2f2119]">{item.name}</p>
-              <p className="text-[#6f675f]">{item.desc}</p>
+      {/* Dynamic Render สินค้าตาม Data ในตะกร้าจริง */}
+      <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-1">
+        {cartItems.length === 0 ? (
+          <p className="text-xs text-center text-[#6f675f] py-4">
+            ไม่มีสินค้าในตะกร้า
+          </p>
+        ) : (
+          cartItems.map((item, idx) => (
+            <div
+              key={item.id || idx}
+              className="flex justify-between items-start text-xs border-b border-dashed border-[#e8dfd1] pb-3"
+            >
+              <div>
+                <p className="font-bold text-[#2f2119]">{item.name}</p>
+                <p className="text-[#6f675f]">
+                  {item.desc || `฿${item.price.toLocaleString()} / ชุด`}
+                </p>
+              </div>
+              <div className="text-right ml-2">
+                <span className="font-semibold block">x{item.quantity}</span>
+                <span className="text-[10px] text-[#8d593a] font-bold">
+                  ฿{(item.price * item.quantity).toLocaleString()}
+                </span>
+              </div>
             </div>
-            <span className="font-semibold ml-2">x{item.qty}</span>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <div className="space-y-2 text-sm text-[#6f675f] border-t border-[#e8dfd1] pt-4">
         <div className="flex justify-between">
-          <span>มูลค่าสินค้า ({selectedPlan.kitsPerWeek} มื้อ)</span>
+          <span>มูลค่าสินค้า ({cartItems.length} รายการ)</span>
           <span className="font-medium text-[#2f2119]">
             ฿{itemsSubtotal.toLocaleString()}
           </span>
@@ -69,13 +71,20 @@ export default function CheckoutSummary({
         </div>
       </div>
 
-      <div className="mt-3 bg-[#f6ede5] p-2.5 rounded-xl text-center text-xs text-[#8d593a] font-semibold">
-        🎉 คุณจะได้รับแต้มสะสม +{earnedPoints} แต้มจากคำสั่งซื้อนี้
-      </div>
+      {earnedPoints > 0 ? (
+        <div className="mt-3 bg-[#f6ede5] p-2.5 rounded-xl text-center text-xs text-[#8d593a] font-semibold">
+          🎉 คุณจะได้รับแต้มสะสม +{earnedPoints} แต้มจากคำสั่งซื้อนี้
+        </div>
+      ) : (
+        <div className="mt-3 bg-[#f6ede5] p-2.5 rounded-xl text-center text-xs text-[#8d593a] font-semibold">
+          💡 สั่งซื้อครบ ฿1,499 ขึ้นไป เพื่อรับแต้มสะสม
+        </div>
+      )}
 
       <button
         type="submit"
-        className="w-full mt-6 bg-[#3d2c2e] text-white py-4 rounded-full font-bold hover:bg-[#8d593a] transition-colors shadow-lg flex items-center justify-center gap-2"
+        disabled={cartItems.length === 0}
+        className="w-full mt-6 bg-[#3d2c2e] text-white py-4 rounded-full font-bold hover:bg-[#8d593a] transition-colors shadow-lg flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         <span>ชำระเงิน</span>
         <span>→</span>

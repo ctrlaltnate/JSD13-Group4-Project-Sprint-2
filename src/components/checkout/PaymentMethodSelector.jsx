@@ -8,6 +8,9 @@ export default function PaymentMethodSelector({
   cardData,
   onCardInputChange,
 }) {
+  // สกัด Boolean Flag เพื่อให้โค้ดอ่านง่าย
+  const isCreditCard = paymentMethod === PAYMENT_METHODS.CREDIT_CARD;
+
   return (
     <div className="bg-[#fcf8f2] border border-[#e8dfd1] rounded-3xl p-6 shadow-sm">
       <div className="flex items-center gap-2 mb-5">
@@ -63,7 +66,7 @@ export default function PaymentMethodSelector({
         {/* Credit Card */}
         <label
           className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
-            paymentMethod === PAYMENT_METHODS.CREDIT_CARD
+            isCreditCard
               ? "border-[#8d593a] bg-[#f6ede5]"
               : "border-[#e8dfd1] bg-white"
           }`}
@@ -73,7 +76,7 @@ export default function PaymentMethodSelector({
               type="radio"
               name="paymentMethod"
               value={PAYMENT_METHODS.CREDIT_CARD}
-              checked={paymentMethod === PAYMENT_METHODS.CREDIT_CARD}
+              checked={isCreditCard}
               onChange={() => setPaymentMethod(PAYMENT_METHODS.CREDIT_CARD)}
               className="accent-[#8d593a]"
             />
@@ -82,7 +85,7 @@ export default function PaymentMethodSelector({
           <span className="text-xs text-[#6f675f]">💳 Visa / Mastercard</span>
         </label>
 
-        {paymentMethod === PAYMENT_METHODS.CREDIT_CARD && (
+        {isCreditCard && (
           <div className="p-5 bg-white border border-[#e8dfd1] rounded-2xl space-y-4 my-2">
             <div>
               <label className="block text-xs font-semibold text-[#6f675f] mb-1">
@@ -96,7 +99,7 @@ export default function PaymentMethodSelector({
                 value={cardData.cardNumber}
                 onChange={onCardInputChange}
                 className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
-                required
+                required={isCreditCard} // 🔗 required เฉพาะตอนเลือกบัตร
               />
             </div>
             <div>
@@ -110,7 +113,7 @@ export default function PaymentMethodSelector({
                 value={cardData.cardName}
                 onChange={onCardInputChange}
                 className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
-                required
+                required={isCreditCard} // 🔗 required เฉพาะตอนเลือกบัตร
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -126,7 +129,7 @@ export default function PaymentMethodSelector({
                   value={cardData.expiry}
                   onChange={onCardInputChange}
                   className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
-                  required
+                  required={isCreditCard} // 🔗 required เฉพาะตอนเลือกบัตร
                 />
               </div>
               <div>
@@ -141,7 +144,7 @@ export default function PaymentMethodSelector({
                   value={cardData.cvc}
                   onChange={onCardInputChange}
                   className="w-full bg-[#fdfbf7] border border-[#e8dfd1] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8d593a]"
-                  required
+                  required={isCreditCard} // 🔗 required เฉพาะตอนเลือกบัตร
                 />
               </div>
             </div>
