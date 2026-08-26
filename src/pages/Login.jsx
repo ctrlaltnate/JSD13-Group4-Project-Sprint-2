@@ -6,7 +6,7 @@ function Login() {
     const [email, setEmail] = useState("");
     const [pwd, setPwd] = useState("");
     const navigate = useNavigate(); //hook ไปหน้า admin ตามเงื่อนไข
-
+test
 
     // ลองใช้ user จาก users.js
     const handleLogin = (event) => {
