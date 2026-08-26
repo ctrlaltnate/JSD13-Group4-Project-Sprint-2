@@ -1,22 +1,25 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
+import OrderEarnedPoints from "../components/order-success/OrderEarnedPoints";
+import OrderDetailsCard from "../components/order-success/OrderDetailsCard";
+
+const DEFAULT_ORDER_DATA = {
+  orderId: "ORD-882940",
+  createdAt: new Date().toLocaleDateString("th-TH"),
+  grandTotal: 959,
+  earnedPoints: 80,
+  deliveryDate: "12 พ.ย.",
+  shippingAddress: {
+    fullName: "ณัฐชา สุขใจ",
+    phone: "081-234-5678",
+    address: "123/45 ถนนวงศ์สว่าง บางซื่อ กรุงเทพมหานคร 10800",
+  },
+  paymentMethod: "PROMPTPAY",
+};
 
 export default function OrderSuccess() {
   const location = useLocation();
-  // รับ data จากการ navigate หรือใช้ mock data ไว้โชว์ก่อนได้
-  const orderData = location.state?.order || {
-    orderId: "ORD-882940",
-    createdAt: new Date().toLocaleDateString("th-TH"),
-    grandTotal: 959,
-    earnedPoints: 80,
-    deliveryDate: "12 พ.ย.",
-    shippingAddress: {
-      fullName: "ณัฐชา สุขใจ",
-      phone: "081-234-5678",
-      address: "123/45 ถนนวงศ์สว่าง บางซื่อ กรุงเทพมหานคร 10800",
-    },
-    paymentMethod: "PROMPTPAY",
-  };
+  const orderData = location.state?.order || DEFAULT_ORDER_DATA;
 
   return (
     <div className="min-h-screen bg-[#fdfbf7] py-12 px-4 sm:px-6 lg:px-8 text-[#2f2119]">
@@ -37,52 +40,11 @@ export default function OrderSuccess() {
           เรากำลังเตรียมวัตถุดิบสดใหม่ส่งตรงถึงบ้านคุณ
         </p>
 
-        {/* Highlight Bonus Points */}
-        <div className="bg-[#f6ede5] border border-[#e8dfd1] rounded-2xl p-4 mb-6">
-          <p className="text-xs text-[#8d593a] font-semibold">
-            แต้มสะสมที่จะได้รับจากคำสั่งซื้อนี้
-          </p>
-          <p className="text-2xl font-bold text-[#3d2c2e] mt-0.5">
-            +{orderData.earnedPoints} Points 🌟
-          </p>
-        </div>
+        {/* Component 1: Earned Points */}
+        <OrderEarnedPoints points={orderData.earnedPoints} />
 
-        {/* Order Details Card */}
-        <div className="bg-white border border-[#e8dfd1] rounded-2xl p-5 text-left text-xs space-y-3 mb-8">
-          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
-            <span className="text-[#6f675f]">หมายเลขคำสั่งซื้อ:</span>
-            <span className="font-bold text-[#3d2c2e]">
-              {orderData.orderId}
-            </span>
-          </div>
-          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
-            <span className="text-[#6f675f]">รอบการจัดส่ง:</span>
-            <span className="font-bold text-[#8d593a]">
-              {orderData.deliveryDate} (จัดส่งช่วงเช้า)
-            </span>
-          </div>
-          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
-            <span className="text-[#6f675f]">ผู้รับ:</span>
-            <span className="font-medium text-[#2f2119]">
-              {orderData.shippingAddress.fullName} (
-              {orderData.shippingAddress.phone})
-            </span>
-          </div>
-          <div className="flex justify-between border-b border-[#e8dfd1] pb-2">
-            <span className="text-[#6f675f]">ที่อยู่จัดส่ง:</span>
-            <span className="font-medium text-[#2f2119] text-right max-w-[60%]">
-              {orderData.shippingAddress.address}
-            </span>
-          </div>
-          <div className="flex justify-between pt-1">
-            <span className="text-sm font-bold text-[#3d2c2e]">
-              ยอดชำระสุทธิ:
-            </span>
-            <span className="text-base font-bold text-[#8d593a]">
-              ฿{orderData.grandTotal.toLocaleString()} THB
-            </span>
-          </div>
-        </div>
+        {/* Component 2: Order Details */}
+        <OrderDetailsCard orderData={orderData} />
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
