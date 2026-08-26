@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './components/index.js'
 import HomePage from './pages/Home.jsx'
+import ToastProvider from './context/ToastProvider.jsx'
 const router = createBrowserRouter([
     {
       path: "/",
@@ -15,7 +16,11 @@ const router = createBrowserRouter([
   ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 }
 
 export default App
