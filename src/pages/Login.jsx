@@ -45,12 +45,12 @@ function Login() {
             className="w-full border p-2 rounded focus:ring-2 focus:ring-amber-500"
           />
         </div>
-        <button type="submit">
+        <button type="submit" className="w-full gb-amber-700 text-white p-2 rounded font-medium hover:bg-amber-800">
           เข้าสู่ระบบ
         </button>
       </form>
-      <p>
-        ยังไม่มีบัญชี <Link to="/register">สมัครสมาชิก</Link>
+      <p className="text-center mt-4 text-sm">
+        ยังไม่มีบัญชี <Link to="/register" className="text-amber-700 font-bold">สมัครสมาชิก</Link>
       </p>
     </div>
   );
