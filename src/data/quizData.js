@@ -1,7 +1,7 @@
-import earthIcon from "../../assets/element-earth.png";
-import waterIcon from "../../assets/element-water.png";
-import airIcon from "../../assets/element-wind.png";
-import fireIcon from "../../assets/element-fire.png";
+import earthIcon from "../assets/element-earth.png";
+import waterIcon from "../assets/element-water.png";
+import airIcon from "../assets/element-wind.png";
+import fireIcon from "../assets/element-fire.png";
 
 export const ELEMENT_INFO = {
   earth: {
@@ -99,7 +99,7 @@ export const QUIZ_QUESTIONS = [
         element: "air",
       },
       {
-        text: "จริงจัง มีพลังสูง มุ่งมั่น แต่อาจหงุดหงิดง่ายเมื่อร้อน",
+        text: "จริงจัง มีพลังสูง มุ่งมั่น แต่างหงุดหงิดง่ายเมื่อร้อน",
         element: "fire",
       },
     ],

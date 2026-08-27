@@ -1,5 +1,5 @@
 import React from "react";
-import { ELEMENT_INFO } from "./quizData";
+import { ELEMENT_INFO } from "../../data/quizData";
 
 export default function QuizResult({ resultElement, onReset }) {
   const info = ELEMENT_INFO[resultElement];
@@ -12,7 +12,6 @@ export default function QuizResult({ resultElement, onReset }) {
         ผลการวิเคราะห์ธาตุเจ้าเรือน
       </div>
 
-      {/* รูปภาพธาตุขนาดชัดเจนจัดวางตรงกลาง */}
       {info.icon && (
         <div className="flex justify-center my-2">
           <img

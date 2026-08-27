@@ -120,7 +120,7 @@ export default function CheckoutPage() {
   );
   const earnedPoints = calculateEarnedPoints(itemsSubtotal);
   const grandTotal = calculateGrandTotal(itemsSubtotal);
-  const promptPayQrUrl = generatePromptPayQrUrl("0812345678", grandTotal);
+  const promptPayQrUrl = generatePromptPayQrUrl("0812345678", grandTotal); // ตรงนี้ใส่เบอร์โทรจริงหรืออ เลขประชาชนจริงที่เชื่อมกับพร้อมเพย์ได้เลย
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

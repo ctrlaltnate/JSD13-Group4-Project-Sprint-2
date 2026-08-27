@@ -1,15 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import rawDishes from "../../mock-data/dishes";
+import rawDishes from "../mock-data/dishes";
 
-import earthImg from "../../assets/element-earth.png";
-import fireImg from "../../assets/element-fire.png";
-import waterImg from "../../assets/element-water.png";
-import windImg from "../../assets/element-wind.png";
+import earthImg from "../assets/element-earth.png";
+import fireImg from "../assets/element-fire.png";
+import waterImg from "../assets/element-water.png";
+import windImg from "../assets/element-wind.png";
 
-// แปลง Object ให้เป็น Array + Map ภาคเข้ากับธาตุ
+// =========================================================================
+// 📌 [จุดจำลองข้อมูลธาตุ (MOCKUP ELEMENT MAPPING)]
+// -------------------------------------------------------------------------
+// 💡 เหตุผล: dishes.js ยังไม่มี field "element" คำนวณจากวัตถุดิบ
+// จึงต้องแมป region เข้ากับธาตุชั่วคราวก่อน เพื่อให้หมุนวงล้อได้ไม่ค้าง
+// 🟢 อนาคต: เมื่อ dishes.js มี item.element หรือ item.elementId แล้ว ให้ใช้ค่าจริงได้เลย
+// =========================================================================
 const rawData = rawDishes?.dishes || rawDishes?.default || rawDishes || {};
 const dishList = Object.values(rawData).map((item) => {
-  let element = item.element;
+  let element = item.element || item.elementId;
+
   if (!element) {
     switch (item.region) {
       case "northern":
@@ -22,7 +29,7 @@ const dishList = Object.values(rawData).map((item) => {
         element = "fire";
         break;
       case "southern":
-        element = "wind";
+        element = "wind"; // หรือ "air" ตามที่ระบบหลักใช้
         break;
       default:
         element = "earth";
@@ -32,12 +39,12 @@ const dishList = Object.values(rawData).map((item) => {
   return {
     ...item,
     name: item.nameTh || item.nameEn || "เมนูอาหาร",
-    element: element,
+    element: element.toLowerCase(),
     benefit: item.description,
   };
 });
 
-// กำหนด Palette สีตามธีม Warm Cream & Dark Brown
+// Palette สีตามธีม Warm Cream & Dark Brown
 const ELEMENT_INFO = {
   all: { name: "รวมทุกธาตุ", sub: "สุ่มทุกเมนู", color: "#CBB69D", img: null },
   earth: {
@@ -60,14 +67,14 @@ const ELEMENT_INFO = {
   },
   fire: {
     name: "ธาตุไฟ",
-    sub: "รสชาติ: ขม เย็น จีด",
+    sub: "รสชาติ: ขม เย็น จืด",
     color: "#D96B43",
     img: fireImg,
   },
 };
 
 export default function SpinningWheelApp() {
-  const [selectedElement, setSelectedElement] = useState("all");
+  const [selectedElement, setSelectedElement] = useState("earth");
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -160,8 +167,6 @@ export default function SpinningWheelApp() {
     }
 
     const sliceAngle = (2 * Math.PI) / currentItems.length;
-
-    // จานสีสำหรับช่องวงล้อในธีม ครีม-น้ำตาล
     const wheelPalette = ["#F5EFE6", "#E8DFD1", "#DFD3C3", "#D2C4B1"];
 
     currentItems.forEach((item, index) => {
@@ -173,7 +178,6 @@ export default function SpinningWheelApp() {
       ctx.arc(centerX, centerY, radius, startAngle, endAngle);
       ctx.closePath();
 
-      // สลับสีช่องให้ดูละมุนเข้ากับธีม
       ctx.fillStyle = wheelPalette[index % wheelPalette.length];
       ctx.fill();
       ctx.lineWidth = 1.5;
@@ -269,6 +273,22 @@ export default function SpinningWheelApp() {
     animationFrameRef.current = requestAnimationFrame(animate);
   };
 
+  // =========================================================================
+  // 📌 [จุดที่จะต้องปรับเพิ่มเมื่อต่อกับระบบจริง (CART INTEGRATION NOTE)]
+  // -------------------------------------------------------------------------
+  // 🟢 สิ่งที่ต้องทำในอนาคต (เมื่อเพื่อนทำ CartContext เสร็จ):
+  // 1. import { useCart } from "../context/CartContext.jsx";
+  // 2. const { addToCart } = useCart();
+  // 3. เปลี่ยนจาก alert() เป็น addToCart(dish);
+  // =========================================================================
+  const handleAddToCart = (dish) => {
+    if (!dish) return;
+    alert(
+      `เพิ่ม "${dish.name || dish.nameTh || "เมนูอาหาร"}" ลงในตะกร้าเรียบร้อยแล้วครับ!`,
+    );
+    setShowModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#3D2E28] flex flex-col items-center justify-start p-4 md:p-8 font-sans">
       <div className="max-w-4xl w-full flex flex-col items-center">
@@ -283,7 +303,7 @@ export default function SpinningWheelApp() {
           เลือกธาตุเจ้าเรือนของคุณ เพื่อให้เราแนะนำเมนูอาหารปรับสมดุลมื้อนี้
         </p>
 
-        {/* Element Selection Cards (ตรงตามภาพ UI) */}
+        {/* Element Selection Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-3xl mb-10">
           {["earth", "water", "wind", "fire"].map((key) => {
             const isSelected = selectedElement === key;
@@ -325,7 +345,6 @@ export default function SpinningWheelApp() {
 
         {/* Wheel Canvas Section */}
         <div className="relative flex items-center justify-center mb-8">
-          {/* เข็มชี้ทรงสามเหลี่ยมสีส้ม/น้ำตาล */}
           <div className="absolute -top-3 z-10 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[24px] border-t-[#3D2E28] drop-shadow-md" />
 
           <canvas
@@ -350,7 +369,7 @@ export default function SpinningWheelApp() {
         </button>
       </div>
 
-      {/* Result Card Container (สไตล์ตามภาพ UI ตัวอย่าง) */}
+      {/* Result Card Modal */}
       {showModal && result && (
         <div className="fixed inset-0 bg-[#3D2E28]/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-[#F9F6F0] border border-[#E8DFD1] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative text-left animate-in fade-in zoom-in duration-200">
@@ -383,7 +402,7 @@ export default function SpinningWheelApp() {
                 ✨ สุ่มใหม่อีกครั้ง
               </button>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => handleAddToCart(result)}
                 className="flex-1 py-3 px-4 bg-[#3D2E28] hover:bg-[#2A1F1B] text-[#F9F6F0] font-bold rounded-xl text-sm transition-colors text-center"
               >
                 🛒 สั่งซื้อเมนูนี้เลย

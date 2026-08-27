@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QUIZ_QUESTIONS } from "./quizData";
+import { QUIZ_QUESTIONS } from "../../data/quizData";
 
 export default function QuizForm({ answers, onSelectAnswer, onSubmit }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -7,10 +7,8 @@ export default function QuizForm({ answers, onSelectAnswer, onSubmit }) {
   const totalQuestions = QUIZ_QUESTIONS.length;
 
   const handleOptionClick = (element) => {
-    // บันทึกคำตอบ
     onSelectAnswer(currentQuestion.id, element);
 
-    // ถ้ายังไม่ถึงข้อสุดท้าย ให้เลื่อนไปข้อถัดไป
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
@@ -24,6 +22,9 @@ export default function QuizForm({ answers, onSelectAnswer, onSubmit }) {
 
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const isAllAnswered = Object.keys(answers).length === totalQuestions;
+  const progressPercent = Math.round(
+    ((currentIndex + 1) / totalQuestions) * 100,
+  );
 
   return (
     <div className="max-w-xl mx-auto">
@@ -33,14 +34,12 @@ export default function QuizForm({ answers, onSelectAnswer, onSubmit }) {
           <span>
             คำถามที่ {currentIndex + 1} จาก {totalQuestions}
           </span>
-          <span>
-            {Math.round(((currentIndex + 1) / totalQuestions) * 100)}%
-          </span>
+          <span>{progressPercent}%</span>
         </div>
         <div className="w-full h-2 bg-[#EFE9E1] rounded-full overflow-hidden">
           <div
             className="h-full bg-[#3D2E2B] transition-all duration-300 ease-out"
-            style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>

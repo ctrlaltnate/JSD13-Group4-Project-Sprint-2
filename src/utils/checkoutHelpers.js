@@ -1,5 +1,6 @@
 import { SHIPPING_FEE, POINT_CALCULATION } from "../constants/checkout";
 
+//ฟังก์ชันคำนวณสะสม
 export const calculateEarnedPoints = (itemsSubtotal) => {
   if (!itemsSubtotal || itemsSubtotal < POINT_CALCULATION.MIN_AMOUNT_TO_EARN) {
     return 0;
@@ -10,10 +11,12 @@ export const calculateEarnedPoints = (itemsSubtotal) => {
   );
 };
 
+//ฟังก์ชันคำนวณราคารวมทั้งหมด
 export const calculateGrandTotal = (itemsSubtotal) => {
   return itemsSubtotal + SHIPPING_FEE;
 };
 
+//ฟังก์ชั่นสร้าง QR Code สำหรับพร้อมเพย์
 export const generatePromptPayQrUrl = (target, amount) => {
   const cleanTarget = target.replace(/[^0-9]/g, "");
   let formattedTarget = cleanTarget;
@@ -37,6 +40,7 @@ export const generatePromptPayQrUrl = (target, amount) => {
     `5802TH` +
     `6304`;
 
+  //ฟังก์ชั่นคำนวณอัลกอรึทึม CRC16  เพื่อตรวจสอบว่าโอนเงินจริงมั้ย
   const crc = crc16CCITT(rawPayload);
   const fullPayload = rawPayload + crc;
 
@@ -44,9 +48,12 @@ export const generatePromptPayQrUrl = (target, amount) => {
 };
 
 const crc16CCITT = (currentPayload) => {
+  // แปลง String เป็น Array ของ Byte (รองรับ UTF-8 / ภาษาไทย / ตัวอักษรพิเศษครบ)
+  const bytes = new TextEncoder().encode(currentPayload);
+
   let crc = 0xffff;
-  for (let i = 0; i < currentPayload.length; i++) {
-    let x = ((crc >> 8) ^ currentPayload.charCodeAt(i)) & 0xff;
+  for (let i = 0; i < bytes.length; i++) {
+    let x = ((crc >> 8) ^ bytes[i]) & 0xff; // ใช้ byte จริงๆ แทน charCodeAt
     x ^= x >> 4;
     crc = ((crc << 8) ^ (x << 12) ^ (x << 5) ^ x) & 0xffff;
   }

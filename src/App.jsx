@@ -5,7 +5,7 @@ import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrderSuccess from "./pages/OrderSuccess.jsx";
 import ElementQuizPage from "./pages/ElementQuizPage.jsx";
 import MenuRandomizerPage from "./pages/MenuRandomizerPage.jsx";
-import SpinningWheel from "./components/menu-randomizer/SpinningWheel.jsx";
+import SpinningWheel from "./pages/SpinningWheel.jsx";
 
 const router = createBrowserRouter([
   {
@@ -35,7 +35,6 @@ const router = createBrowserRouter([
       },
       {
         path: "spinningWheel",
-        // 2. ใส่ <SpinningWheel /> แทนของเดิมได้เลย
         element: <SpinningWheel />,
       },
     ],
